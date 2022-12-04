@@ -151,5 +151,6 @@ values
     ('admin1', 'ottawa Downtown', True);
 `;
 
-exports.createTable = createTable;
-exports.initialDataQuery = initialDataQuery;
+let getAllBooks = `select * from book`
+
+module.exports = { createTable, initialDataQuery, getAllBooks}
