@@ -24,6 +24,28 @@ let initializeData = () => {
       })
 }
 
+let initializeFunction = () => {
+    client.query(initialSetup.initialFunctionQuery, (err, res) => {
+        if (!err) {
+          console.log("Initial functions create success");
+        } else {
+          console.log(err.message);
+        }
+        client.end;
+      })
+}
+
+let initializeTrigger = () => {
+    client.query(initialSetup.initialTriggerQuery, (err, res) => {
+        if (!err) {
+          console.log("Initial triggers create success");
+        } else {
+          console.log(err.message);
+        }
+        client.end;
+      })
+}
+
 let createNewPublisher = (publisherName, address, email, BankAccount) => {
     const query = `INSERT into Publisher values ('${publisherName}', '${address}', '${email}', '${BankAccount}');`
     console.log(query);
@@ -43,6 +65,21 @@ let addBookPublisher = (ibsn, publisherName, percentage) => {
     client.query(query, (err, res) => {
         if (!err) {
           console.log("book-publisher insert success");
+          return res.rows
+        } else {
+          console.log(err.message);
+          return(err.message)
+        }
+        client.end;
+    })
+}
+
+let addNewBook = (isbn, bookName, numberOfPage, purchasePrice, sellingPrice, initialStock, author, genre, publisherName) => {
+    const query = `SELECT insertNewBook(${isbn}, '${bookName}', ${numberOfPage},${purchasePrice},${sellingPrice},${initialStock},'${author}','${genre}','${publisherName}');`
+    console.log(query);
+    client.query(query, (err, res) => {
+        if (!err) {
+          console.log("new book added " + isbn);
           return res.rows
         } else {
           console.log(err.message);
@@ -86,4 +123,4 @@ let getBookDetail = async (isbn) => {
         return err.message
     }
 }
-module.exports = {getAllBooks}
+module.exports = { getAllBooks, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}

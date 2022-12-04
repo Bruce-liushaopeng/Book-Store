@@ -151,6 +151,65 @@ values
     ('admin1', 'ottawa Downtown', True);
 `;
 
+let initialFunctionQuery = `create or replace function insertNewBook
+(ISBN numeric(13), BookName varchar(50), NumberofPages INT, PurchasePrice float(2), SellingPrice float(2), InitialStock INT, author CHARACTER VARYING(25), genre CHARACTER VARYING(25), PublisherName CHARACTER VARYING(25)) 
+RETURNS void AS $$
+BEGIN
+    --insert into Book table
+    insert into Book
+        values
+        (ISBN, BookName, NumberOfPages, PurchasePrice, SellingPrice, 0, InitialStock);
+
+    --insert into Book Author Table
+    insert into BookAuthor
+        values
+        (ISBN, author);
+
+    -- insert into BookPublisher Table
+    insert into BookGenre
+        values
+        (ISBN, genre);
+END;
+$$ LANGUAGE plpgsql;
+
+create or replace function placeOrder
+    (ISBN numeric(13), orderAmount int, orderNumber numeric(10), shippingAddress CHARACTER VARYING(25), userName CHARACTER VARYING(15)) 
+    RETURNS void AS $$
+    DECLARE
+        currDate Date := current_date;
+    BEGIN
+        --insert into SystemOrder table
+		insert into SystemOrder
+			values
+			(placeOrder.orderNumber, currDate, placeOrder.shippingAddress, placeOrder.userName);
+		--insert into OrderBook table
+        insert into orderbook
+            values
+            (placeOrder.orderNumber, placeOrder.ISBN, orderAmount);
+		 
+		-- update QuantityInStock and selling amount for book
+		update Book
+			set quantityInStock = quantityInStock - orderAmount,
+                SellsAmount = SellsAmount + orderAmount
+			where Book.ISBN = placeOrder.ISBN;
+    END;
+$$ LANGUAGE plpgsql;`
+
+let initialTriggerQuery = `CREATE or replace FUNCTION book_stock_check() RETURNS trigger AS $book_stock_check$
+BEGIN
+    -- checking book stock quatities, if less than 10, auto plus 15
+    IF NEW.quantityInStock < 10 THEN
+        -- auto ordering and stock up
+        update book set quantityInStock = NEW.quantityInStock + (select SellsAmount from lastMonthSell where lastMonthSell.ISBN = book.ISBN) 
+        where book.ISBN = NEW.ISBN;
+    END IF;
+    RETURN NEW;
+END;
+$book_stock_check$ LANGUAGE plpgsql;
+
+CREATE or replace TRIGGER book_stock_check AFTER UPDATE ON Book
+    FOR EACH ROW EXECUTE FUNCTION book_stock_check();`
+
 let getAllBooks = `select * from book`
 
-module.exports = { createTable, initialDataQuery, getAllBooks}
+module.exports = { createTable, initialDataQuery, getAllBooks, initialFunctionQuery, initialTriggerQuery}
