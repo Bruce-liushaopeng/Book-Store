@@ -113,7 +113,7 @@ let getAllBooks = async () => {
     }
 }
 
-let getBookDetail = async (isbn) => {
+let getSingleBook = async (isbn) => {
     try{
         const query = `select * from book where isbn = ${isbn};`
         const res = await client.query(query)
@@ -123,4 +123,76 @@ let getBookDetail = async (isbn) => {
         return err.message
     }
 }
-module.exports = { getAllBooks, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}
+
+let getBookAuthor = async (isbn) => {
+  try{
+      const query = `select * from BookAuthor where isbn = ${isbn};`
+      const res = await client.query(query)
+      return (res.rows);
+  } catch (err) {
+      console.log(err.message);
+      return err.message
+  }
+}
+
+let getBookPublisher = async (isbn) => {
+  try{
+      const query = `select * from BookPublisher where isbn = ${isbn};`
+      const res = await client.query(query)
+      return (res.rows);
+  } catch (err) {
+      console.log(err.message);
+      return err.message
+  }
+}
+
+let getBookGenres = async (isbn) => {
+  try{
+      const query = `select * from BookGenre where isbn = ${isbn};`
+      const res = await client.query(query)
+      return (res.rows);
+  } catch (err) {
+      console.log(err.message);
+      return err.message
+  }
+}
+
+let getBookDetail = async (isbn) => {
+  try{
+      const singleBook = await getSingleBook(isbn)
+      const author = await getBookAuthor(isbn)
+      const publisher = await getBookPublisher(isbn)
+      const genres = await getBookGenres(isbn)
+      const res = singleBook.concat(author, publisher, genres)
+      console.log(res);
+      return (res);
+  } catch (err) {
+      console.log(err.message);
+      return err.message
+  }
+}
+
+let registerUser = async (username, address) => {
+  try {
+    const query = `INSERT into systemuser values ('${username}', '${address}', 'False')`;;
+    const res = await client.query(query);
+    console.log(username + " user create success");
+    return username;
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+};
+
+let loginUser = async (username) => {
+  try {
+    const query = `select * from systemuser where username = '${username}'`;
+    const res = await client.query(query);
+    return res.rows[0];
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+};
+
+module.exports = { getAllBooks, loginUser, registerUser, getBookDetail, getSingleBook, getBookPublisher, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}

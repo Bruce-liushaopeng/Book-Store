@@ -1,18 +1,22 @@
 const queryHandler = require('./query-handler')
 var prompt = require('prompt');
 prompt.start();
+let user = {}
+
 const initialize = async () => {
     // await queryHandler.initializeTable();
     // await queryHandler.initializeData();
     // await queryHandler.initializeFunction();
     // await queryHandler.initializeTrigger();
-    queryHandler.addNewBook( 9780747532718, 'Harry Potter and the Philosophers Stone3', 400, 15, 20, 15, 'J.K. Rowling', 'Advanture',  'Bloomsbury Publishing')
+    //queryHandler.addNewBook( 9780747532748, 'Harry Potter and the Philosophers Stone5', 400, 15, 20, 15, 'J.K. Rowling', 'Advanture',  'Bloomsbury Publishing')
+}
+const quickTest = async() => {
+    //queryHandler.getBookDetail(9780747532743);
+    queryHandler.loginUser("userB")
 }
 const userConsole = async () => {
     
     while (true) {
-        await queryHandler.initializeFunction();
-        await queryHandler.initializeTrigger();
         console.log("enter your command")
         const { input } = await prompt.get(['input'])
         console.log(input);
@@ -24,6 +28,27 @@ const userConsole = async () => {
             console.log("enter bookInfo")
             const { bookinfo } = await prompt.get(['bookinfo'])
         }
+
+        if (input == "select") {
+            //console.log("please input the ISBN of the book");
+            //const { isbn } = await prompt.get(['isbn'])
+            const { isbn } = await prompt.get(['isbn'])
+            const bookdetail = await queryHandler.getBookDetail(isbn)
+            console.log(bookdetail);
+        }
+
+        if (input == "login") {
+            const { userName } = await prompt.get(['userName'])
+            const loginResult = await queryHandler.loginUser(userName)
+            if (!loginResult) {
+                console.log("User Not Found, try Again");
+            } else {
+                const { username, isadmin } = loginResult
+                console.log(username, isadmin);
+
+            }
+        }
     }
 }
-initialize()
+// quickTest()
+userConsole()
