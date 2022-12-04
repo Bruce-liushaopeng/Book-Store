@@ -1,17 +1,6 @@
 const db = require("./db")
 const client = db.client
 const initialSetup = require('./database-initialize-variables')
-let getAllBooks = () => {
-    client.query(initialSetup.getAllBooks, (err, res) => {
-        if (!err) {
-            console.log(res.rows);
-          return res
-        } else {
-            console.log(err)
-            return err.message;
-        }
-    })
-}
 
 let initializeTable = () => {
     client.query(initialSetup.createTable, (err, res) => {
@@ -48,8 +37,53 @@ let createNewPublisher = (publisherName, address, email, BankAccount) => {
       })
 }
 
+let addBookPublisher = (ibsn, publisherName, percentage) => {
+    const query = `INSERT into BookPublisher values ('${ibsn}', '${publisherName}', '${percentage}');`
+    console.log(query);
+    client.query(query, (err, res) => {
+        if (!err) {
+          console.log("book-publisher insert success");
+          return res.rows
+        } else {
+          console.log(err.message);
+          return(err.message)
+        }
+        client.end;
+    })
+}
 
+// let getAllBooks = () => {
+//     client.query(initialSetup.getAllBooks, (err, res) => {
+//         if (!err) {
+//             console.log(res.rows);
+//             return res.rows
+//         } else {
+//             console.log(err)
+//             return err.message;
+//         }
+//     })
+// }
 
-createNewPublisher('Bloomsburyyy Publing', '51 Be3ford S3qure, London', 'contact@l2o2msbury.com ', '1234567390976542')
-console.log("finished")
-exports.getAllBooks = getAllBooks
+let getAllBooks = async () => {
+    try{
+        const res = await client.query(initialSetup.getAllBooks)
+        console.log("All books fetch success");
+        console.log(res.rows.length);
+        return (res.rows);
+    } catch (err) {
+        console.log(err.message);
+        return err.message
+    }
+}
+
+let getBookDetail = async (isbn) => {
+    try{
+        const query = `select * from book where isbn = ${isbn};`
+        const res = await client.query(query)
+        return (res.rows);
+    } catch (err) {
+        console.log(err.message);
+        return err.message
+    }
+}
+module.exports = {getAllBooks}
