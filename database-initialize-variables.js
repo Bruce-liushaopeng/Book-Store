@@ -113,23 +113,23 @@ values (9780747532743, 'Harry Potter and the Philosopher’s Stone', 400, 15, 20
 insert into BookGenre
 values
     (9780747532743, 'Children'),
-    (9780747532743, 'Adventure'),
+    (9780747532743, 'Advanture'),
     (9780747532743, 'Fantasy'),
     (9780747532743, 'Narrative'),
     (9780747538486, 'Children'),
-    (9780747538486, 'Adventure'),
+    (9780747538486, 'Advanture'),
     (9780747538486, 'Fantasy'),
     (9780747538486, 'Narrative'),
     (9780747542155, 'Children'),
-    (9780747542155, 'Adventure'),
+    (9780747542155, 'Advanture'),
     (9780747542155, 'Fantasy'),
     (9780747542155, 'Narrative'),
     (9780747546245, 'Children'),
-    (9780747546245, 'Adventure'),
+    (9780747546245, 'Advanture'),
     (9780747546245, 'Fantasy'),
     (9780747546245, 'Narrative'),
     (9780747551003, 'Children'),
-    (9780747551003, 'Adventure'),
+    (9780747551003, 'Advanture'),
     (9780747551003, 'Fantasy'),
     (9780747551003, 'Narrative');
 insert into BookAuthor
@@ -211,5 +211,7 @@ CREATE or replace TRIGGER book_stock_check AFTER UPDATE ON Book
     FOR EACH ROW EXECUTE FUNCTION book_stock_check();`
 
 let getAllBooks = `select * from book`
+
+let getSellExpendReport = `select * from SaleExpend`
 
 module.exports = { createTable, initialDataQuery, getAllBooks, initialFunctionQuery, initialTriggerQuery}

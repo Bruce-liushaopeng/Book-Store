@@ -1,7 +1,9 @@
 const queryHandler = require('./query-handler')
 var prompt = require('prompt');
+var { User } = require("./userState")
+currentUser = new User();
+
 prompt.start();
-let user = {}
 
 const initialize = async () => {
     // await queryHandler.initializeTable();
@@ -44,9 +46,14 @@ const userConsole = async () => {
                 console.log("User Not Found, try Again");
             } else {
                 const { username, isadmin } = loginResult
-                console.log(username, isadmin);
-
+                currentUser.setUser(userName);
+                currentUser.setIsAdmin(isadmin);
+                console.log(username + "login success");
             }
+        }
+
+        if (input == "help") {
+            currentUser.printHelp()
         }
     }
 }

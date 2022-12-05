@@ -164,7 +164,6 @@ let getBookDetail = async (isbn) => {
       const publisher = await getBookPublisher(isbn)
       const genres = await getBookGenres(isbn)
       const res = singleBook.concat(author, publisher, genres)
-      console.log(res);
       return (res);
   } catch (err) {
       console.log(err.message);
@@ -195,4 +194,15 @@ let loginUser = async (username) => {
   }
 };
 
-module.exports = { getAllBooks, loginUser, registerUser, getBookDetail, getSingleBook, getBookPublisher, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}
+let getSaleExpendReport = async () => {
+  try {
+    const query = initialSetup.getSaleExpendReport;
+    const res = await client.query(query);
+    return res.rows[0];
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+};
+
+module.exports = { getSaleExpendReport, getAllBooks, loginUser, registerUser, getBookDetail, getSingleBook, getBookPublisher, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}

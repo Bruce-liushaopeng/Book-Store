@@ -5,7 +5,7 @@ const client = new Client({
     password: "Lsp75908635", //type your own database passoword here
     port: 5432,
     host: "localhost",
-    database: 'BookStoreTest3'
+    database: 'BookStore'
   });
 
 client.connect()
