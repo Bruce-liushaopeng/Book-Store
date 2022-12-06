@@ -170,6 +170,16 @@ let getBookDetail = async (isbn) => {
   }
 }
 
+let searchByISBN = async (isbn) => {
+  try{
+      const res = await getSingleBook(isbn)
+      return (res);
+  } catch (err) {
+      console.log(err.message);
+      return err.message
+  }
+}
+
 let registerUser = async (username, address) => {
   try {
     const query = `INSERT into systemuser values ('${username}', '${address}', 'False');`
@@ -259,4 +269,4 @@ let getSaleExpendReport = async () => {
   }
 };
 
-module.exports = {addBookPublisher, handleBasketOrder, addSystemOrder, updateOrderBook, getSaleExpendReport, getAllBooks, loginUser, registerUser, getBookDetail, getSingleBook, getBookPublisher, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}
+module.exports = {addBookPublisher, searchByISBN, handleBasketOrder, addSystemOrder, updateOrderBook, getSaleExpendReport, getAllBooks, loginUser, registerUser, getBookDetail, getSingleBook, getBookPublisher, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}

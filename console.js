@@ -29,7 +29,8 @@ const placeOrderTestCase = () => {
     const result = queryHandler.handleBasketOrder(items)
 }
 const userConsole = async () => {
-    console.log("Welcome to the bookstore :)");
+    currentUser.printUserInfo()
+    currentUser.printHelp()
     while (true) {
         console.log('==============================');
         console.log("enter your command")
@@ -49,7 +50,6 @@ const userConsole = async () => {
                 const { isbn, bookName, numberOfPages, purchasePrice, sellingPrice, initialStock, author, genre, publisher, percentage } = await prompt.get(['isbn', 'bookName', 'numberOfPages', 'purchasePrice', 'sellingPrice', 'initialStock', 'author', 'genre', 'publisher', 'percentage'])
                 const res = queryHandler.addNewBook(isbn, bookName, numberOfPages, purchasePrice, sellingPrice, initialStock, author, genre, publisher)
             }
-            
         }
 
         if (input == "select") {
@@ -60,6 +60,22 @@ const userConsole = async () => {
             console.log(bookdetail);
         }
 
+        if (input == 'search-by-isbn') {
+            console.log("Enter the ISBN of the book");
+            const { isbn } = await prompt.get(['isbn'])
+            const book = await queryHandler.searchByISBN(isbn)
+            console.log(book);
+        }
+
+        if (input == "logout") {
+            if(! currentUser.getUserName()){
+                console.log("You are not login yet, can not logout");
+            } else {
+                username = currentUser.getUserName()
+                currentUser.clearUser()
+                console.log("logout success, bye " + username);
+            }
+        }
         if (input == "login") {
             const { userName } = await prompt.get(['userName'])
             const loginResult = await queryHandler.loginUser(userName)
@@ -69,7 +85,8 @@ const userConsole = async () => {
                 const { username, isadmin } = loginResult
                 currentUser.setUser(username);
                 currentUser.setIsAdmin(isadmin);
-                currentUser.printUserInfo()
+                currentUser.printUserInfo();
+                currentUser.printHelp();
             }
         }
 
@@ -121,5 +138,5 @@ const userConsole = async () => {
     }
 }
 //quickTest()
-//userConsole()
-addNewBookTest()
+userConsole()
+//addNewBookTest()
