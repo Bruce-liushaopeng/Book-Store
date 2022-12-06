@@ -19,6 +19,11 @@ const addNewBookTest = async () => {
     await queryHandler.addNewBook( 9780747532333, 'Harry Potter and the Philosophers Stone5', 400, 15, 20, 15, 'J.K. Rowling', 'Advanture',  'Bloomsbury Publishing', 0.02)
 }
 
+const testSearchBooName = async () => {
+    const result = await queryHandler.getBookByBookName("Harry")
+    console.log(result);
+}
+
 const placeOrderTestCase = () => {
     console.log("teststart");
     basket.addToBasket(9780747532743, 3)
@@ -138,5 +143,7 @@ const userConsole = async () => {
     }
 }
 //quickTest()
-userConsole()
+//userConsole()
 //addNewBookTest()
+//testSearchBooName()
+placeOrderTestCase()

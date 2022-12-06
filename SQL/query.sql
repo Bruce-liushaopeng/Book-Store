@@ -23,6 +23,11 @@ insert into BookAuthor
 values 
     (ISBN, 'author_name');
 
+-- implicit search
+select BookName 
+from Book
+where BookName LIKE '%Intented_book_name_fragment%';
+
 -- Insert book and author, when using, replace the desired variable with actual value
 insert into BookPublisher
 values 

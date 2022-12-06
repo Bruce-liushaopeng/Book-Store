@@ -123,6 +123,19 @@ let getSingleBook = async (isbn) => {
     }
 }
 
+let getBookByBookName = async (bookName) => {
+  try{
+      const query = `select BookName 
+        from Book
+        where BookName LIKE '%${bookName}%';`
+      const res = await client.query(query)
+      return (res.rows);
+  } catch (err) {
+      console.log(err.message);
+      return err.message
+  }
+}
+
 let getBookAuthor = async (isbn) => {
   try{
       const query = `select * from BookAuthor where isbn = ${isbn};`
@@ -243,7 +256,7 @@ let getOrderNumber = async () => {
 let handleBasketOrder = async (basketItems) => {
   try {
     console.log(basketItems);
-    const {shippAddress: shippingAddress, userName} = basketItems[0]
+    const {shippingAddress, userName} = basketItems[0]
     await addSystemOrder(shippingAddress, userName)
     basketItems.forEach(item => {
       const {isbn, amount} = item
@@ -269,4 +282,4 @@ let getSaleExpendReport = async () => {
   }
 };
 
-module.exports = {addBookPublisher, searchByISBN, handleBasketOrder, addSystemOrder, updateOrderBook, getSaleExpendReport, getAllBooks, loginUser, registerUser, getBookDetail, getSingleBook, getBookPublisher, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}
+module.exports = {getBookByBookName, addBookPublisher, searchByISBN, handleBasketOrder, addSystemOrder, updateOrderBook, getSaleExpendReport, getAllBooks, loginUser, registerUser, getBookDetail, getSingleBook, getBookPublisher, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}
