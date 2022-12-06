@@ -1,4 +1,8 @@
 //define the drop table query
+
+exports.databaseName = "bookstore5"
+exports.pw = "Lsp75908635"
+
 exports.dropTable = `
 DROP TABLE IF EXISTS PublisherPhone CASCADE;
 DROP TABLE IF EXISTS BookPublisher CASCADE;
@@ -19,6 +23,17 @@ create table if not exists SystemUser
 	 primary key (UserName)
 	);
 
+create table if not exists Book
+(ISBN				numeric(13) NOT NULL UNIQUE,
+    BookName			varchar(50) NOT NULL,
+    NumberofPages		INT NOT NULL,
+    PurchasePrice		float(2) NOT NULL,
+    SellingPrice		float(2) NOT NULL,
+    SellsAmount		INT NOT NULL,
+    QuantityInStock	INT NOT NULL,
+    primary key (ISBN)
+);
+
 -- create table SysetmOrder
 create table if not exists SystemOrder
 	(OrderNumber		numeric(10) NOT NULL UNIQUE, 
@@ -38,16 +53,7 @@ create table if not exists OrderBook
 	 foreign key (ISBN) references Book(ISBN)
 	);
 
-create table if not exists Book
-	(ISBN				numeric(13) NOT NULL UNIQUE,
-	 BookName			varchar(50) NOT NULL,
-	 NumberofPages		INT NOT NULL,
-	 PurchasePrice		float(2) NOT NULL,
-	 SellingPrice		float(2) NOT NULL,
-	 SellsAmount		INT NOT NULL,
-	 QuantityInStock	INT NOT NULL,
-	 primary key (ISBN)
-	);
+
 
 alter table OrderBook
 add foreign key (ISBN) references Book(ISBN);
