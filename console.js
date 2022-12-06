@@ -24,6 +24,11 @@ const testSearchBooName = async () => {
     console.log(result);
 }
 
+const testgetBestSalePublisher = async () => {
+    const result = await queryHandler.getBestSalePublisher()
+    console.log(result);
+}
+
 const placeOrderTestCase = () => {
     console.log("teststart");
     basket.addToBasket(9780747532743, 3)
@@ -33,6 +38,7 @@ const placeOrderTestCase = () => {
     const items = basket.getAllItems()
     const result = queryHandler.handleBasketOrder(items)
 }
+
 const userConsole = async () => {
     currentUser.printUserInfo()
     currentUser.printHelp()
@@ -146,4 +152,5 @@ const userConsole = async () => {
 //userConsole()
 //addNewBookTest()
 //testSearchBooName()
-placeOrderTestCase()
+//placeOrderTestCase()
+testgetBestSalePublisher()

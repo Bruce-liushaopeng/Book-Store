@@ -271,6 +271,17 @@ let handleBasketOrder = async (basketItems) => {
   }
 };
 
+let getBestSalePublisher = async () => {
+  try {
+    const query = initialSetup.getBestSalePublisher;
+    const res = await client.query(query);
+    return res.rows;
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+}
+
 let getSaleExpendReport = async () => {
   try {
     const query = initialSetup.getSaleExpendReport;
@@ -282,4 +293,4 @@ let getSaleExpendReport = async () => {
   }
 };
 
-module.exports = {getBookByBookName, addBookPublisher, searchByISBN, handleBasketOrder, addSystemOrder, updateOrderBook, getSaleExpendReport, getAllBooks, loginUser, registerUser, getBookDetail, getSingleBook, getBookPublisher, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}
+module.exports = { getBestSalePublisher, getBookByBookName, addBookPublisher, searchByISBN, handleBasketOrder, addSystemOrder, updateOrderBook, getSaleExpendReport, getAllBooks, loginUser, registerUser, getBookDetail, getSingleBook, getBookPublisher, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}

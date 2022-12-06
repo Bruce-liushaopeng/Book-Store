@@ -84,6 +84,7 @@ create table if not exists PublisherPhone
 		foreign key (PublisherName) references Publisher(PublisherName)	
 	);
 
+-- BONUS, cauculate the revenue by author
 create or replace view authorSales As
 	with bs as
 		(select book.isbn, BookAuthor.author, book.sellsamount as sells 
@@ -108,7 +109,7 @@ select
 t1.isbn, revenue, purchaseTotal, publishershare, revenue - purchaseTotal - publishershare as profit 
 from (bookSale natural join bookExp) as t1 left join publisherExp on t1.isbn = publisherExp.isbn
 
-	
+-- BONUS, cauculate the revenue by genre
 create or replace view genreSales As
 	with bs as
 		(select book.isbn, bookgenre.genre, book.SellsAmount as sells 
@@ -119,6 +120,23 @@ create or replace view genreSales As
 	from bs
 	group by genre;
 
+-- BONUS, use to see which publisher creates the most profit for the books store
+create or replace view PublisherTotalSale AS
+	with PublisherTotalSells as (
+		with PublisherSells as(
+			select publishername, bookname, ((sellingprice-purchaseprice - sellingprice * BookPublisher.percentage)*sellsamount) as sells
+			from BookPublisher join book
+			on bookpublisher.ISBN = book.isbn)
+
+			select publishername, sum(sells) as total
+			from PublisherSells
+			group by publishername)
+
+		select *
+		from PublisherTotalSells;
+
+--
+
 -- create view to get the selling of last month per book.
 create or replace view lastMonthSell AS
 	with lastMonthDate (lastMonthDate) AS (
@@ -128,5 +146,6 @@ create or replace view lastMonthSell AS
 	select ISBN, sum(Quantity) as sellAmount from (OrderBook o Join SystemOrder s on o.orderNumber = s.orderNumber)as combinedtable
 		where combinedtable.date <= current_date AND combinedtable.date > (select lastMonthDate from lastMonthDate)
 		GROUP by ISBN
+
         
 
