@@ -4,7 +4,7 @@
 -- assume one publisher related, and the publisher is exist in the database, use separate query to set publishers if there are more
 -- Details for each on please refer to query.sql file
 create or replace function insertNewBook
-    (ISBN numeric(13), BookName varchar(50), NumberofPages INT, PurchasePrice float(2), SellingPrice float(2), InitialStock INT, author CHARACTER VARYING(25), genre CHARACTER VARYING(25), PublisherName CHARACTER VARYING(25)) 
+    (ISBN numeric(13), BookName varchar(50), NumberofPages INT, PurchasePrice float(2), SellingPrice float(2), InitialStock INT, author CHARACTER VARYING(25), genre CHARACTER VARYING(25), PublisherName CHARACTER VARYING(25), percentage numeric(2)) 
     RETURNS void AS $$
     BEGIN
         --insert into Book table
@@ -16,8 +16,13 @@ create or replace function insertNewBook
         insert into BookAuthor
             values
             (ISBN, author);
+
+        --insert into Book Publisher Table
+        insert into BookPublisher
+            values
+            (ISBN, PublisherName, percentage);
 	
-		-- insert into BookPublisher Table
+		-- insert into BookGenre Table
         insert into BookGenre
             values
             (ISBN, genre);

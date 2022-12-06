@@ -74,9 +74,8 @@ let addBookPublisher = (ibsn, publisherName, percentage) => {
     })
 }
 
-let addNewBook = (isbn, bookName, numberOfPage, purchasePrice, sellingPrice, initialStock, author, genre, publisherName) => {
-    const query = `SELECT insertNewBook(${isbn}, '${bookName}', ${numberOfPage},${purchasePrice},${sellingPrice},${initialStock},'${author}','${genre}','${publisherName}');`
-    console.log(query);
+let addNewBook = (isbn, bookName, numberOfPage, purchasePrice, sellingPrice, initialStock, author, genre, publisherName, percentage) => {
+    const query = `SELECT insertNewBook(${isbn}, '${bookName}', ${numberOfPage},${purchasePrice},${sellingPrice},${initialStock},'${author}','${genre}','${publisherName}', ${percentage});`
     client.query(query, (err, res) => {
         if (!err) {
           console.log("new book added " + isbn);
@@ -260,4 +259,4 @@ let getSaleExpendReport = async () => {
   }
 };
 
-module.exports = { handleBasketOrder, addSystemOrder, updateOrderBook, getSaleExpendReport, getAllBooks, loginUser, registerUser, getBookDetail, getSingleBook, getBookPublisher, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}
+module.exports = {addBookPublisher, handleBasketOrder, addSystemOrder, updateOrderBook, getSaleExpendReport, getAllBooks, loginUser, registerUser, getBookDetail, getSingleBook, getBookPublisher, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}

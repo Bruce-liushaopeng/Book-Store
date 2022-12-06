@@ -15,7 +15,8 @@ const initialize = async () => {
     //queryHandler.addNewBook( 9780747532748, 'Harry Potter and the Philosophers Stone5', 400, 15, 20, 15, 'J.K. Rowling', 'Advanture',  'Bloomsbury Publishing')
 
 }
-const quickTest = () => {
+const addNewBookTest = async () => {
+    await queryHandler.addNewBook( 9780747532333, 'Harry Potter and the Philosophers Stone5', 400, 15, 20, 15, 'J.K. Rowling', 'Advanture',  'Bloomsbury Publishing', 0.02)
 }
 
 const placeOrderTestCase = () => {
@@ -40,10 +41,15 @@ const userConsole = async () => {
         }
         if (input == "add-new-book") {
             if(!currentUser.getUserName()) {
-                
+                console.log("Please login as ADMIN");
+            } else if (!currentUser.getIsAdmin) {
+                console.log(" You are not an ADMIN ");
+            } else {
+                console.log("Enter Book ISBN, BookName, NumberOfPage, PurchasePrice, SellingPrice, Initial stock, Author, genre, and publisher")
+                const { isbn, bookName, numberOfPages, purchasePrice, sellingPrice, initialStock, author, genre, publisher, percentage } = await prompt.get(['isbn', 'bookName', 'numberOfPages', 'purchasePrice', 'sellingPrice', 'initialStock', 'author', 'genre', 'publisher', 'percentage'])
+                const res = queryHandler.addNewBook(isbn, bookName, numberOfPages, purchasePrice, sellingPrice, initialStock, author, genre, publisher)
             }
-            console.log("enter bookInfo")
-            const { bookinfo } = await prompt.get(['bookinfo'])
+            
         }
 
         if (input == "select") {

@@ -153,25 +153,31 @@ values
 `;
 
 let initialFunctionQuery = `create or replace function insertNewBook
-(ISBN numeric(13), BookName varchar(50), NumberofPages INT, PurchasePrice float(2), SellingPrice float(2), InitialStock INT, author CHARACTER VARYING(25), genre CHARACTER VARYING(25), PublisherName CHARACTER VARYING(25)) 
+(ISBN numeric(13), BookName varchar(50), NumberofPages INT, PurchasePrice float(2), SellingPrice float(2), InitialStock INT, author CHARACTER VARYING(25), genre CHARACTER VARYING(25), PublisherName CHARACTER VARYING(25), percentage numeric(2)) 
 RETURNS void AS $$
 BEGIN
-    --insert into Book table
-    insert into Book
-        values
-        (ISBN, BookName, NumberOfPages, PurchasePrice, SellingPrice, 0, InitialStock);
+	--insert into Book table
+	insert into Book
+		values
+		(ISBN, BookName, NumberOfPages, PurchasePrice, SellingPrice, 0, InitialStock);
 
-    --insert into Book Author Table
-    insert into BookAuthor
-        values
-        (ISBN, author);
+	--insert into Book Author Table
+	insert into BookAuthor
+		values
+		(ISBN, author);
 
-    -- insert into BookPublisher Table
-    insert into BookGenre
-        values
-        (ISBN, genre);
+	--insert into Book Publisher Table
+	insert into BookPublisher
+		values
+		(ISBN, PublisherName, percentage);
+
+	-- insert into BookGenre Table
+	insert into BookGenre
+		values
+		(ISBN, genre);
 END;
 $$ LANGUAGE plpgsql;
+
 
 create or replace function placeOrder
     (ISBN numeric(13), orderAmount int, orderNumber numeric(10), shippingAddress CHARACTER VARYING(25), userName CHARACTER VARYING(15)) 
