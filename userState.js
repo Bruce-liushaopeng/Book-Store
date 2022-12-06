@@ -3,21 +3,25 @@ class User {
     userName = ""
     isAdmin = false
     constructor() {
+        this.userName = ""
+        this.isAdmin = false
     }
 
     setUser = (userName) => {
-        currentUser.userName = userName
+        this.userName = userName
     }
 
     setIsAdmin = (isAdmin) => {
-        currentUser.isAdmin = isAdmin
+        this.isAdmin = isAdmin
     }
 
     ClearUser = () => {
-        currentUser = {}
+        userName = {}
+        this.isAdmin = false
     }
 
     getUserName = () => {
+        
         return this.userName
     }
 
@@ -34,6 +38,7 @@ class User {
     printUserInfo = () => {
         if ( !this.userName ) {
             console.log("user <Register> to register");
+            return
         }
         console.log("current user: " + this.userName);
         if ( this.isAdmin ) {

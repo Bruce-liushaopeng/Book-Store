@@ -25,7 +25,7 @@ const client = new Client({
   user: "postgres",
   port: 5432,
   password: "107499538", //type your own database passoword here
-  database: "bookstore",
+  database: "bookstoreTest",
 });
 //defind drop the table query
 let dropTable = `

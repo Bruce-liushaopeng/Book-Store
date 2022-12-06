@@ -1,7 +1,9 @@
 const queryHandler = require('./query-handler')
 var prompt = require('prompt');
 var { User } = require("./userState")
-currentUser = new User();
+var { Basket } = require("./basketState");
+var currentUser = new User();
+var basket = new Basket();
 
 prompt.start();
 
@@ -11,14 +13,24 @@ const initialize = async () => {
     // await queryHandler.initializeFunction();
     // await queryHandler.initializeTrigger();
     //queryHandler.addNewBook( 9780747532748, 'Harry Potter and the Philosophers Stone5', 400, 15, 20, 15, 'J.K. Rowling', 'Advanture',  'Bloomsbury Publishing')
+
 }
-const quickTest = async() => {
-    //queryHandler.getBookDetail(9780747532743);
-    queryHandler.loginUser("userB")
+const quickTest = () => {
+}
+
+const placeOrderTestCase = () => {
+    console.log("teststart");
+    basket.addToBasket(9780747532743, 3)
+    basket.addToBasket(9780747546245, 2)
+    basket.assignUser("user1")
+    basket.addShippingAddress("myhonmeAddress 101")
+    const items = basket.getAllItems()
+    const result = queryHandler.handleBasketOrder(items)
 }
 const userConsole = async () => {
-    
+    console.log("Welcome to the bookstore :)");
     while (true) {
+        console.log('==============================');
         console.log("enter your command")
         const { input } = await prompt.get(['input'])
         console.log(input);
@@ -27,6 +39,9 @@ const userConsole = async () => {
             console.log(res);
         }
         if (input == "add-new-book") {
+            if(!currentUser.getUserName()) {
+                
+            }
             console.log("enter bookInfo")
             const { bookinfo } = await prompt.get(['bookinfo'])
         }
@@ -46,16 +61,59 @@ const userConsole = async () => {
                 console.log("User Not Found, try Again");
             } else {
                 const { username, isadmin } = loginResult
-                currentUser.setUser(userName);
+                currentUser.setUser(username);
                 currentUser.setIsAdmin(isadmin);
-                console.log(username + "login success");
+                currentUser.printUserInfo()
+            }
+        }
+
+        if (input == "place-order") {
+            if (!currentUser.getUserName()) {
+                console.log("Please first <login> or <register> to prcceed");
+            } else {
+                console.log("Please provide shipping address: ");
+                const { shippAddress } = await prompt.get(['shippAddress'])
+                basket.addShippingAddress(shippAddress)
+                basket.assignUser(currentUser.getUserName())
+                var basketItemsObj = basket.getAllItems()
+                queryHandler.handleBasketOrder(basketItemsObj)
+                console.log(basketItemsObj);
+            }
+        }
+
+        if (input == "register") {
+            console.log("Please provide your username and address");
+            const { userName, address } = await prompt.get(["userName", "address"]);
+            const res = await queryHandler.registerUser(userName, address);
+            if (res) {
+                console.log("await returned");
+                currentUser.setUser(userName)
+                currentUser.setIsAdmin(false)
+                currentUser.printUserInfo()
             }
         }
 
         if (input == "help") {
             currentUser.printHelp()
         }
+
+        if (input == "user-info") {
+            currentUser.printUserInfo()
+        }
+
+        if (input == "add-to-basket") {
+            console.log("Please prodive ISBN of the book:  ");
+            const { isbn } = await prompt.get(['isbn'])
+            console.log("Input an amount: ");
+            const { amount } = await prompt.get(['amount'])
+            basket.addToBasket(isbn, amount)
+        }
+
+        if (input == "view-basket") {
+            basket.print()
+        }
     }
 }
-// quickTest()
-userConsole()
+//quickTest()
+//userConsole()
+addNewBookTest()

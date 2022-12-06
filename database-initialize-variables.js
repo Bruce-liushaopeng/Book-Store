@@ -23,7 +23,8 @@ create table if not exists OrderBook
 	 ISBN				numeric(13) NOT NULL,
 	 Quantity			INT NOT NULL,
 	 primary key (OrderNumber,ISBN),
-	 foreign key (OrderNumber) references SystemOrder(OrderNumber)
+	 foreign key (OrderNumber) references SystemOrder(OrderNumber),
+	 foreign key (ISBN) references Book(ISBN)
 	);
 
 create table if not exists Book

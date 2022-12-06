@@ -6,9 +6,13 @@ create table if not exists SystemUser
 	 primary key (UserName)
 	);
 
+CREATE SEQUENCE sequenceNumber
+START WITH 1000
+INCREMENT BY 1;
+
 -- create table SysetmOrder
 create table if not exists SystemOrder
-	(OrderNumber		numeric(10) NOT NULL UNIQUE, 
+	(OrderNumber		INT, 
 	 Date				Date NOT NULL,
 	 ShippingAddress	CHARACTER VARYING(25) NOT NULL,		
 	 UserName			CHARACTER VARYING(15) NOT NULL,
@@ -17,11 +21,12 @@ create table if not exists SystemOrder
 	);
 
 create table if not exists OrderBook
-	(OrderNumber		numeric(10) NOT NULL,
+	( OrderNumber		INT NOT NULL,
 	 ISBN				numeric(13) NOT NULL,
 	 Quantity			INT NOT NULL,
 	 primary key (OrderNumber,ISBN),
 	 foreign key (OrderNumber) references SystemOrder(OrderNumber)
+	 foreign key (ISBN) references Book(ISBN)
 	);
 
 create table if not exists Book

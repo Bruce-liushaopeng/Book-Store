@@ -173,7 +173,7 @@ let getBookDetail = async (isbn) => {
 
 let registerUser = async (username, address) => {
   try {
-    const query = `INSERT into systemuser values ('${username}', '${address}', 'False')`;;
+    const query = `INSERT into systemuser values ('${username}', '${address}', 'False');`
     const res = await client.query(query);
     console.log(username + " user create success");
     return username;
@@ -183,11 +183,66 @@ let registerUser = async (username, address) => {
   }
 };
 
+let addSystemOrder = async (shippingAddress, userName) => {
+  try {
+    const query = `select addSystemOrder('${shippingAddress}', '${userName}');`;
+    const res = await client.query(query);
+    console.log(userName +" System Order added");
+    return res;
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+};
+
+let updateOrderBook = async (isbn, orderAmount) => {
+  try {
+    const query = `select updateOrderBook(${isbn}, ${orderAmount});`;
+    const res = await client.query(query);
+    console.log("Order success: " + isbn + " x " + orderAmount);
+    return res;
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+};
+
+
 let loginUser = async (username) => {
   try {
     const query = `select * from systemuser where username = '${username}'`;
     const res = await client.query(query);
     return res.rows[0];
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+};
+
+let getOrderNumber = async () => {
+  try {
+    const query = `select MAX(ordernumber) from systemOrder`;
+    const res = await client.query(query);
+    return res.rows[0].max;
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+};
+
+
+let handleBasketOrder = async (basketItems) => {
+  try {
+    console.log(basketItems);
+    const {shippAddress: shippingAddress, userName} = basketItems[0]
+    await addSystemOrder(shippingAddress, userName)
+    basketItems.forEach(item => {
+      const {isbn, amount} = item
+      updateOrderBook(isbn, amount)
+    })
+    console.log("Order placement complete");
+    const orderNumber = await getOrderNumber();
+    console.log("Order Number: " + orderNumber);
   } catch (err) {
     console.log(err.message);
     return err.message;
@@ -205,4 +260,4 @@ let getSaleExpendReport = async () => {
   }
 };
 
-module.exports = { getSaleExpendReport, getAllBooks, loginUser, registerUser, getBookDetail, getSingleBook, getBookPublisher, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}
+module.exports = { handleBasketOrder, addSystemOrder, updateOrderBook, getSaleExpendReport, getAllBooks, loginUser, registerUser, getBookDetail, getSingleBook, getBookPublisher, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}

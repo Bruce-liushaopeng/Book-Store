@@ -29,8 +29,8 @@ select insertNewBook(9780747532798, 'Harry Potter and the Philosophers Stone1', 
 
 
 -- function for place an order on a single book
-create or replace function placeOrder
-    (ISBN numeric(13), orderAmount int, orderNumber numeric(10), shippingAddress CHARACTER VARYING(25), userName CHARACTER VARYING(15)) 
+create or replace function addSystemOrder
+    ( shippingAddress CHARACTER VARYING(25), userName CHARACTER VARYING(15)) 
     RETURNS void AS $$
     DECLARE
         currDate Date := current_date;
@@ -38,21 +38,31 @@ create or replace function placeOrder
         --insert into SystemOrder table
 		insert into SystemOrder
 			values
-			(placeOrder.orderNumber, currDate, placeOrder.shippingAddress, placeOrder.userName);
-		--insert into OrderBook table
+			(nextval('sequenceNumber'), currDate, addSystemOrder.shippingAddress, addSystemOrder.userName) ;
+    END;
+$$ LANGUAGE plpgsql;
+
+create or replace function updateOrderBook
+    (ISBN numeric(13), orderAmount INT)
+    RETURNS void AS $$
+	Declare 
+	orderNumber INT;
+    BEGIN
+		select max(systemorder.orderNumber) into orderNumber from systemorder;
         insert into orderbook
             values
-            (placeOrder.orderNumber, placeOrder.ISBN, orderAmount);
+            (orderNumber, updateOrderBook.ISBN, orderAmount);
 		 
 		-- update QuantityInStock and selling amount for book
 		update Book
 			set quantityInStock = quantityInStock - orderAmount,
                 SellsAmount = SellsAmount + orderAmount
-			where Book.ISBN = placeOrder.ISBN;
+			where Book.ISBN = updateOrderBook.ISBN;
     END;
 $$ LANGUAGE plpgsql;
 
 -- test for placeOrder
-select placeOrder(9780747546245, 3, 1234567884, 'test address1', 'user2')
+select addSystemOrder('test address1', 'user2');
+select updateOrderBook('9780747551003', 3)
 update book set quantityInStock = quantityInStock - 1 where ISBN = 9780747546245
 
