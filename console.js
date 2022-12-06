@@ -2,6 +2,7 @@ const queryHandler = require('./query-handler')
 var prompt = require('prompt');
 var { User } = require("./userState")
 var { Basket } = require("./basketState");
+const { query } = require('express');
 var currentUser = new User();
 var basket = new Basket();
 
@@ -12,8 +13,7 @@ const initialize = async () => {
     // await queryHandler.initializeData();
     // await queryHandler.initializeFunction();
     // await queryHandler.initializeTrigger();
-    //queryHandler.addNewBook( 9780747532748, 'Harry Potter and the Philosophers Stone5', 400, 15, 20, 15, 'J.K. Rowling', 'Advanture',  'Bloomsbury Publishing')
-
+    // queryHandler.addNewBook( 9780747532748, 'Harry Potter and the Philosophers Stone5', 400, 15, 20, 15, 'J.K. Rowling', 'Advanture',  'Bloomsbury Publishing')
 }
 const addNewBookTest = async () => {
     await queryHandler.addNewBook( 9780747532333, 'Harry Potter and the Philosophers Stone5', 400, 15, 20, 15, 'J.K. Rowling', 'Advanture',  'Bloomsbury Publishing', 0.02)
@@ -39,6 +39,23 @@ const placeOrderTestCase = () => {
     const result = queryHandler.handleBasketOrder(items)
 }
 
+const testReport = async () => {
+    const bestPublisherResult = await queryHandler.getBestSalePublisher()
+    const {publishername: bestPublisher, total: bestPublisher_revenue}  = bestPublisherResult[0]
+    console.log(bestPublisher + " generated the most revenue, revenue amount is $" + bestPublisher_revenue);
+
+    const saleExp = await queryHandler.getSaleExpendReport()
+    saleExp.forEach((se, i) => {
+        console.log("Book " + i);
+        console.log("isbn: " + se.isbn);
+        console.log("Sales Revenue: " + se.revenue);
+        console.log("Purchase Total Cost: " + se.purchasetotal);
+        console.log("Publisher Shared Cut: " + se.publishershare);
+        console.log("Profit generated: " + se.profit);
+        console.log(" ");
+    });
+}
+
 const userConsole = async () => {
     currentUser.printUserInfo()
     currentUser.printHelp()
@@ -54,12 +71,12 @@ const userConsole = async () => {
         if (input == "add-new-book") {
             if(!currentUser.getUserName()) {
                 console.log("Please login as ADMIN");
-            } else if (!currentUser.getIsAdmin) {
+            } else if (!currentUser.getIsAdmin()) {
                 console.log(" You are not an ADMIN ");
             } else {
                 console.log("Enter Book ISBN, BookName, NumberOfPage, PurchasePrice, SellingPrice, Initial stock, Author, genre, and publisher")
                 const { isbn, bookName, numberOfPages, purchasePrice, sellingPrice, initialStock, author, genre, publisher, percentage } = await prompt.get(['isbn', 'bookName', 'numberOfPages', 'purchasePrice', 'sellingPrice', 'initialStock', 'author', 'genre', 'publisher', 'percentage'])
-                const res = queryHandler.addNewBook(isbn, bookName, numberOfPages, purchasePrice, sellingPrice, initialStock, author, genre, publisher)
+                const res = queryHandler.addNewBook(isbn, bookName, numberOfPages, purchasePrice, sellingPrice, initialStock, author, genre, publisher, percentage)
             }
         }
 
@@ -78,6 +95,13 @@ const userConsole = async () => {
             console.log(book);
         }
 
+        if (input == 'search-by-bookname') {
+            console.log("Enter the name of the book");
+            const { bookname } = await prompt.get(['bookname'])
+            const books = await queryHandler.SearchByBookName(bookname)
+            console.log(books);
+        }
+
         if (input == "logout") {
             if(! currentUser.getUserName()){
                 console.log("You are not login yet, can not logout");
@@ -87,6 +111,7 @@ const userConsole = async () => {
                 console.log("logout success, bye " + username);
             }
         }
+
         if (input == "login") {
             const { userName } = await prompt.get(['userName'])
             const loginResult = await queryHandler.loginUser(userName)
@@ -100,6 +125,8 @@ const userConsole = async () => {
                 currentUser.printHelp();
             }
         }
+
+        if (input == '')
 
         if (input == "place-order") {
             if (!currentUser.getUserName()) {
@@ -148,9 +175,9 @@ const userConsole = async () => {
         }
     }
 }
-//quickTest()
 //userConsole()
 //addNewBookTest()
 //testSearchBooName()
 //placeOrderTestCase()
-testgetBestSalePublisher()
+//testgetBestSalePublisher()
+testReport()

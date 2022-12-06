@@ -6,7 +6,7 @@ create table if not exists SystemUser
 	 primary key (UserName)
 	);
 
-CREATE SEQUENCE sequenceNumber
+CREATE SEQUENCE if not exists sequenceNumber
 START WITH 1000
 INCREMENT BY 1;
 
@@ -20,15 +20,6 @@ create table if not exists SystemOrder
 	 foreign key (UserName) references SystemUser(UserName)
 	);
 
-create table if not exists OrderBook
-	( OrderNumber		INT NOT NULL,
-	 ISBN				numeric(13) NOT NULL,
-	 Quantity			INT NOT NULL,
-	 primary key (OrderNumber,ISBN),
-	 foreign key (OrderNumber) references SystemOrder(OrderNumber)
-	 foreign key (ISBN) references Book(ISBN)
-	);
-
 create table if not exists Book
 	(ISBN				numeric(13) NOT NULL UNIQUE,
 	 BookName			varchar(50) NOT NULL,
@@ -39,6 +30,17 @@ create table if not exists Book
 	 QuantityInStock	INT NOT NULL,
 	 primary key (ISBN)
 	);
+	
+create table if not exists OrderBook
+	( OrderNumber		INT NOT NULL,
+	 ISBN				numeric(13) NOT NULL,
+	 Quantity			INT NOT NULL,
+	 primary key (OrderNumber,ISBN),
+	 foreign key (OrderNumber) references SystemOrder(OrderNumber),
+	 foreign key (ISBN) references Book(ISBN)
+	);
+
+
 
 alter table OrderBook
 add foreign key (ISBN) references Book(ISBN);
@@ -107,7 +109,7 @@ create or replace view SaleExpend As
 
 select 
 t1.isbn, revenue, purchaseTotal, publishershare, revenue - purchaseTotal - publishershare as profit 
-from (bookSale natural join bookExp) as t1 left join publisherExp on t1.isbn = publisherExp.isbn
+from (bookSale natural join bookExp) as t1 left join publisherExp on t1.isbn = publisherExp.isbn;
 
 -- BONUS, cauculate the revenue by genre
 create or replace view genreSales As
@@ -135,7 +137,24 @@ create or replace view PublisherTotalSale AS
 		select *
 		from PublisherTotalSells;
 
---
+-- BONUS get the publisher sells the most book
+create or replace view bestPublisher_amount AS
+	with PublisherTotalAmount as (
+		with PublisherAmount as(
+			select publishername, bookname, sellsamount
+			from BookPublisher join book
+			on bookpublisher.ISBN = book.isbn)
+
+			select publishername, sum(sellsamount) as total
+			from PublisherAmount
+			group by publishername)
+
+		select *
+		from PublisherTotalAmount;
+
+select *
+from bestpublisher_amount
+where total = (select max(total) from bestpublisher_amount);
 
 -- create view to get the selling of last month per book.
 create or replace view lastMonthSell AS

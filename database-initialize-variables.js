@@ -98,12 +98,7 @@ create or replace view lastMonthSell AS
 	with lastMonthDate (lastMonthDate) AS (
 		select current_date - 30
 	)
-
-	select ISBN, sum(Quantity) as sellAmount from (OrderBook o Join SystemOrder s on o.orderNumber = s.orderNumber)as combinedtable
-		where combinedtable.date <= current_date AND combinedtable.date > (select lastMonthDate from lastMonthDate)
-		GROUP by ISBN
-        
-
+    
 `;
 
 //define insert data query
