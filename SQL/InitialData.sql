@@ -1,4 +1,4 @@
-Insert initial Publishers
+--Insert initial Publishers
 INSERT into Publisher 
 values ('Bloomsbury Publishing', '50 Bedford Square, London', 'contact@bloomsbury.com ', '12345678909876543'), -- Haryy Potter
 ('Houghton Mifflin Harcourt', '83 Alexander StCrows Nest', 'UK@allenandunwin.com', '12345678909876544'), -- lord of the rings
