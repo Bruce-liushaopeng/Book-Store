@@ -320,7 +320,7 @@ let searchByGenre = async (genre) => {
 
 let searchByAuthor = async (author) => {
   try {
-    const query = `select isbn, bookname, author from book natural join bookauthor where author = '${author}'`;
+    const query = `select isbn, bookname, author from book natural join bookauthor where author LIKE '%${author}%';`;
     const res = await client.query(query);
     return res.rows;
   } catch (err) {

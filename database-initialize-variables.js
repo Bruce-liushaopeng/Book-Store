@@ -228,7 +228,7 @@ insert into Book
 values (9780747532743, 'Harry Potter and the Philosopher’s Stone', 400, 15, 20, 0, 15 ),
  (9780747538486, 'Harry Potter and the Chamber of Secrets', 250, 15, 20, 0, 15 ),
  (9780747542155, 'Harry Potter and the Prisoner of Azkaban', 500, 15, 20, 0, 15 ),
- (9780747551003, 'Harry Potter and the Order of the Phoenix', 400, 15, 20, 0, 5 ),
+ (9780747551003, 'Harry Potter and the Order of the Phoenix', 400, 15, 20, 0, 20 ),
  (9780747546245, 'Harry Potter and the Goblet of Fire', 300, 15, 20, 0, 15 ),
  (9780618042203, 'The Lord of the Ring: The Ring Sets Out',350, 10,25,0,12),
  (9780618042210, 'The Lord Of The Rings: The Ring Goes South',253, 10,25,0,20),
@@ -347,12 +347,12 @@ values
     (9780618042234, 'Houghton Mifflin Harcourt',0.09),
     (9780261102231, 'Houghton Mifflin Harcourt',0.09),
     (9780618083565, 'Houghton Mifflin Harcourt',0.09),
-    (9780553588484, 'Bantam Spectra', 1.12),
-    (9780553381696, 'Bantam Spectra', 1.12),
-    (9780553573428, 'Bantam Spectra', 1.12),
-    (9780553582024, 'Bantam Spectra', 1.12),
-    (9780553582017, 'Bantam Spectra', 1.12),
-    (9780002247412, 'Bantam Spectra', 1.12);
+    (9780553588484, 'Bantam Spectra', 0.07),
+    (9780553381696, 'Bantam Spectra', 0.07),
+    (9780553573428, 'Bantam Spectra', 0.07),
+    (9780553582024, 'Bantam Spectra', 0.07),
+    (9780553582017, 'Bantam Spectra', 0.07),
+    (9780002247412, 'Bantam Spectra', 0.07);
 
 -- insert initial users
 insert into SystemUser
