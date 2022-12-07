@@ -24,6 +24,11 @@ const testSearchBooName = async () => {
     console.log(result);
 }
 
+const getOrderTest = async () => {
+    const result = await queryHandler.getOrder("1037", "user1")
+    console.log(result);
+}
+
 const testgetBestSalePublisher = async () => {
     const result = await queryHandler.getBestSalePublisher()
     console.log(result);
@@ -101,6 +106,22 @@ const userConsole = async () => {
                 console.log("Enter Book ISBN, BookName, NumberOfPage, PurchasePrice, SellingPrice, Initial stock, Author, genre, and publisher")
                 const { isbn, bookName, numberOfPages, purchasePrice, sellingPrice, initialStock, author, genre, publisher, percentage } = await prompt.get(['isbn', 'bookName', 'numberOfPages', 'purchasePrice', 'sellingPrice', 'initialStock', 'author', 'genre', 'publisher', 'percentage'])
                 const res = queryHandler.addNewBook(isbn, bookName, numberOfPages, purchasePrice, sellingPrice, initialStock, author, genre, publisher, percentage)
+            }
+        }
+
+        if (input == "check-order") {
+            if (!currentUser.getUserName()) {
+                console.log("Login to your account first");
+            } else {
+                const { orderNumber } = await prompt.get(['orderNumber'])
+                const result = await queryHandler.getOrder(orderNumber, currentUser.userName)
+                if(result.length) {
+                    console.log("Here's your order, estimate arrive in 5 days");
+                    console.log(result);
+                } else {
+                    console.log("No corresponding order number package for you");
+                }
+                
             }
         }
 
@@ -222,3 +243,4 @@ userConsole()
 //testSearchBooName()
 //placeOrderTestCase()
 //testgetBestSalePublisher()
+//getOrderTest()
