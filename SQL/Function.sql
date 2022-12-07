@@ -29,9 +29,6 @@ create or replace function insertNewBook
     END;
 $$ LANGUAGE plpgsql;
 
--- test for insert FUNCTION insertNewBook
-select insertNewBook(9780747532798, 'Harry Potter and the Philosophers Stone1', 400, 15, 20, 15, 'J.K. Rowling', 'Advanture',  'Bloomsbury Publishing');
-
 
 -- function for place an order on a single book
 create or replace function addSystemOrder
@@ -65,9 +62,4 @@ create or replace function updateOrderBook
 			where Book.ISBN = updateOrderBook.ISBN;
     END;
 $$ LANGUAGE plpgsql;
-
--- test for placeOrder
-select addSystemOrder('test address1', 'user2');
-select updateOrderBook('9780747551003', 3)
-update book set quantityInStock = quantityInStock - 1 where ISBN = 9780747546245
 

@@ -104,12 +104,7 @@ create or replace view lastMonthSell AS
 	with lastMonthDate (lastMonthDate) AS (
 		select current_date - 30
 	)
-
-	select ISBN, sum(Quantity) as sellAmount from (OrderBook o Join SystemOrder s on o.orderNumber = s.orderNumber)as combinedtable
-		where combinedtable.date <= current_date AND combinedtable.date > (select lastMonthDate from lastMonthDate)
-		GROUP by ISBN
-        
-
+    
 `;
 
 //define insert data query
@@ -330,9 +325,33 @@ $book_stock_check$ LANGUAGE plpgsql;
 CREATE or replace TRIGGER book_stock_check AFTER UPDATE ON Book	
 FOR EACH ROW EXECUTE FUNCTION book_stock_check();`	
 
+exports.createGenreSales = `create view genreSales As
+with bs as
+    (select book.isbn, bookgenre.genre, (book.sellsamount*book.sellingprice) as sells 
+    from bookgenre 
+    left join book 
+    on book.isbn=bookgenre.isbn)
+select 	genre, sum(sells)as sales
+from bs
+group by genre;`
+
+exports.createAuthorSales = `create view authorSales As
+    with bs as
+        (select book.isbn, BookAuthor.author, (book.sellsamount*book.sellingprice) as Sales(dollar) 
+        from BookAuthor 
+        left join book 
+        on book.isbn=BookAuthor.isbn)
+    select 	author, sum(sells)as sales
+    from bs
+group by author`
+
 
 exports.getAllBooks = `select * from book`	
-exports.getSellExpendReport = `select * from SaleExpend`	
-
-
 exports.getAllBooks = `select * from book`;
+
+// query for report generating
+exports.getSellExpendReport = `select * from SaleExpend`	
+exports.getBestSalePublisher = `select * from PublisherTotalSale where total = (select max(total) from PublisherTotalSale)`;
+exports.getPubliserSale = `select * from PublisherTotalSale`
+exports.getAuthorSales = `select * from authorSales`
+exports.getGenreSales = `select * from genreSales`

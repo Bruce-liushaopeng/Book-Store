@@ -88,18 +88,6 @@ let addNewBook = (isbn, bookName, numberOfPage, purchasePrice, sellingPrice, ini
     })
 }
 
-// let getAllBooks = () => {
-//     client.query(initialSetup.getAllBooks, (err, res) => {
-//         if (!err) {
-//             console.log(res.rows);
-//             return res.rows
-//         } else {
-//             console.log(err)
-//             return err.message;
-//         }
-//     })
-// }
-
 let getAllBooks = async () => {
     try{
         const res = await client.query(initialSetup.getAllBooks)
@@ -123,7 +111,7 @@ let getSingleBook = async (isbn) => {
     }
 }
 
-let getBookByBookName = async (bookName) => {
+let SearchByBookName = async (bookName) => {
   try{
       const query = `select BookName 
         from Book
@@ -271,15 +259,107 @@ let handleBasketOrder = async (basketItems) => {
   }
 };
 
-let getSaleExpendReport = async () => {
+let getBestSalePublisher = async () => {
   try {
-    const query = initialSetup.getSaleExpendReport;
+    const query = initialSetup.getBestSalePublisher;
     const res = await client.query(query);
-    return res.rows[0];
+    return res.rows;
   } catch (err) {
     console.log(err.message);
     return err.message;
   }
+}
+
+let getOrder = async (ordernumber, username) => {
+  try {
+    const query = `select * from systemorder natural join orderbook where ordernumber = ${ordernumber} and username = '${username}'`;
+    const res = await client.query(query);
+    return res.rows;
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+}
+
+let getBestAuthorBySaleUnit = async () => {
+  try {
+    const query = `select * 
+      from bestauthor_amount
+      where salesa = (select max(salesa) from bestauthor_amount);`;
+    const res = await client.query(query);
+    return res.rows;
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+}
+
+let getBestAuthorByRevenue = async () => {
+  try {
+    const query = `select * 
+      from bestauthor_sales
+      where sales = (select max(sales) from bestauthor_sales)`;
+    const res = await client.query(query);
+    return res.rows;
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+}
+
+let searchByGenre = async (genre) => {
+  try {
+    const query = `select isbn, bookname, genre from book natural join bookgenre where genre = '${genre}'`;
+    const res = await client.query(query);
+    return res.rows;
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+}
+
+let searchByAuthor = async (author) => {
+  try {
+    const query = `select isbn, bookname, author from book natural join bookauthor where author = '${author}'`;
+    const res = await client.query(query);
+    return res.rows;
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+}
+
+let searchByPublisher = async (publisher) => {
+  try {
+    const query = `select isbn, bookname, publisherName from book natural join bookPublisher where publisherName = '${publisher}'`;
+    const res = await client.query(query);
+    return res.rows;
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+}
+
+let getSaleExpendReport = async () => {
+  try {
+    const query = initialSetup.getSellExpendReport;
+    const res = await client.query(query);
+    return res.rows;
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+}
+
+let getPublisherSale = async () => {
+    try {
+      const query = initialSetup.getSaleExpendReport;
+      const res = await client.query(query);
+      return res.rows[0];
+    } catch (err) {
+      console.log(err.message);
+      return err.message;
+    }
 };
 
-module.exports = {getBookByBookName, addBookPublisher, searchByISBN, handleBasketOrder, addSystemOrder, updateOrderBook, getSaleExpendReport, getAllBooks, loginUser, registerUser, getBookDetail, getSingleBook, getBookPublisher, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}
+module.exports = { searchByGenre, searchByAuthor, getPublisherSale, searchByPublisher,getBestSalePublisher, getBestAuthorBySaleUnit, getBestAuthorByRevenue,SearchByBookName, addBookPublisher, searchByISBN, getOrder, handleBasketOrder, addSystemOrder, updateOrderBook, getSaleExpendReport, getAllBooks, loginUser, registerUser, getBookDetail, getSingleBook, getBookPublisher, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}

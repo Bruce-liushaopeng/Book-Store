@@ -2,6 +2,7 @@ const queryHandler = require('./query-handler')
 var prompt = require('prompt');
 var { User } = require("./userState")
 var { Basket } = require("./basketState");
+const { query } = require('express');
 var currentUser = new User();
 var basket = new Basket();
 
@@ -12,8 +13,7 @@ const initialize = async () => {
     // await queryHandler.initializeData();
     // await queryHandler.initializeFunction();
     // await queryHandler.initializeTrigger();
-    //queryHandler.addNewBook( 9780747532748, 'Harry Potter and the Philosophers Stone5', 400, 15, 20, 15, 'J.K. Rowling', 'Advanture',  'Bloomsbury Publishing')
-
+    // queryHandler.addNewBook( 9780747532748, 'Harry Potter and the Philosophers Stone5', 400, 15, 20, 15, 'J.K. Rowling', 'Advanture',  'Bloomsbury Publishing')
 }
 const addNewBookTest = async () => {
     await queryHandler.addNewBook( 9780747532333, 'Harry Potter and the Philosophers Stone5', 400, 15, 20, 15, 'J.K. Rowling', 'Advanture',  'Bloomsbury Publishing', 0.02)
@@ -21,6 +21,16 @@ const addNewBookTest = async () => {
 
 const testSearchBooName = async () => {
     const result = await queryHandler.getBookByBookName("Harry")
+    console.log(result);
+}
+
+const getOrderTest = async () => {
+    const result = await queryHandler.getOrder("1037", "user1")
+    console.log(result);
+}
+
+const testgetBestSalePublisher = async () => {
+    const result = await queryHandler.getBestSalePublisher()
     console.log(result);
 }
 
@@ -33,6 +43,37 @@ const placeOrderTestCase = () => {
     const items = basket.getAllItems()
     const result = queryHandler.handleBasketOrder(items)
 }
+
+const showReport = async () => {
+    const saleExp = await queryHandler.getSaleExpendReport()
+    console.log("SALE VS EXPEND REPORT");
+    saleExp.forEach((se, i) => {
+        console.log("Book " + i);
+        console.log("isbn: " + se.isbn);
+        console.log("Sales Revenue: " + se.revenue);
+        console.log("Purchase Total Cost: " + se.purchasetotal);
+        console.log("Publisher Shared Cut: " + se.publishershare);
+        console.log("Profit generated: " + se.profit);
+        console.log(" ");
+    });
+    console.log("**************");
+    const bestPublisherResult = await queryHandler.getBestSalePublisher()
+    const {publishername: bestPublisher, total: bestPublisher_revenue}  = bestPublisherResult[0]
+    console.log("Most Revenue Publisher:");
+    console.log(bestPublisher + " generated the most revenue, revenue amount is $" + bestPublisher_revenue);
+    console.log("**************");
+    const bestAuthorByRevenueResult = await queryHandler.getBestAuthorByRevenue()
+    const {author: bestAuthorRevenue, sales: revenueDetail} = bestAuthorByRevenueResult[0]
+    console.log("Best Revenue Author: ");
+    console.log(`Best Author by Revenue is  ${bestAuthorRevenue} , total revenue generated $ ${revenueDetail}`); 
+    console.log("**************");
+    const bestAuthorBySaleUnitResult = await queryHandler.getBestAuthorBySaleUnit()
+    const {author: bestAuthorUnitSales, salesa: unitSalesDetail} = bestAuthorBySaleUnitResult[0]
+    console.log("Best Sale Unit Author: ");
+    console.log(`Best Author by units sold is ${bestAuthorUnitSales} , total unit sold is  ${unitSalesDetail}`); 
+    console.log("**************");
+}
+
 const userConsole = async () => {
     currentUser.printUserInfo()
     currentUser.printHelp()
@@ -41,35 +82,81 @@ const userConsole = async () => {
         console.log("enter your command")
         const { input } = await prompt.get(['input'])
         console.log(input);
-        if (input == 'view-all-books') {
-            const res = await queryHandler.getAllBooks()
-            console.log(res);
-        }
+        if (input == "view-all-books") {
+            const res = await queryHandler.getAllBooks();
+            if (currentUser.getIsAdmin()) console.log(res);
+            else {
+              let bookArray = [];
+              for (let i = 0; i < res.length; i++) {
+                let temp = {};
+                temp["isbn"] = res[i]["isbn"];
+                temp["bookname"] = res[i]["bookname"];
+                temp["numberofpages"] = res[i]["numberofpages"];
+                bookArray.push(temp);
+              }
+              console.log(bookArray);
+            }
+          }
         if (input == "add-new-book") {
             if(!currentUser.getUserName()) {
                 console.log("Please login as ADMIN");
-            } else if (!currentUser.getIsAdmin) {
+            } else if (!currentUser.getIsAdmin()) {
                 console.log(" You are not an ADMIN ");
             } else {
                 console.log("Enter Book ISBN, BookName, NumberOfPage, PurchasePrice, SellingPrice, Initial stock, Author, genre, and publisher")
                 const { isbn, bookName, numberOfPages, purchasePrice, sellingPrice, initialStock, author, genre, publisher, percentage } = await prompt.get(['isbn', 'bookName', 'numberOfPages', 'purchasePrice', 'sellingPrice', 'initialStock', 'author', 'genre', 'publisher', 'percentage'])
-                const res = queryHandler.addNewBook(isbn, bookName, numberOfPages, purchasePrice, sellingPrice, initialStock, author, genre, publisher)
+                const res = queryHandler.addNewBook(isbn, bookName, numberOfPages, purchasePrice, sellingPrice, initialStock, author, genre, publisher, percentage)
+            }
+        }
+
+        if (input == "check-order") {
+            if (!currentUser.getUserName()) {
+                console.log("Login to your account first");
+            } else {
+                const { orderNumber } = await prompt.get(['orderNumber'])
+                const result = await queryHandler.getOrder(orderNumber, currentUser.userName)
+                if(result.length) {
+                    console.log("Here's your order, estimate arrive in 5 days");
+                    console.log(result);
+                } else {
+                    console.log("No corresponding order number package for you");
+                }
+                
             }
         }
 
         if (input == "select") {
             //console.log("please input the ISBN of the book");
             //const { isbn } = await prompt.get(['isbn'])
-            const { isbn } = await prompt.get(['isbn'])
-            const bookdetail = await queryHandler.getBookDetail(isbn)
-            console.log(bookdetail);
-        }
+            const { isbn } = await prompt.get(["isbn"]);
+            const bookdetail = await queryHandler.getBookDetail(isbn);
+            if (!currentUser.getIsAdmin()) {
+              let bookinfo = {
+                bookname: bookdetail[0]["bookname"],
+                numberofpages: bookdetail[0]["numberofpages"],
+                quantityinstock: bookdetail[0]["quantityinstock"],
+                author: bookdetail[1]["author"],
+                genre: [],
+              };
+              for (let i = 3; i < bookdetail.length; i++) {
+                bookinfo["genre"].push(bookdetail[i]["genre"]);
+              }
+              console.log(bookinfo);
+            } else console.log(bookdetail);
+          }
 
         if (input == 'search-by-isbn') {
             console.log("Enter the ISBN of the book");
             const { isbn } = await prompt.get(['isbn'])
             const book = await queryHandler.searchByISBN(isbn)
             console.log(book);
+        }
+
+        if (input == 'search-by-bookname') {
+            console.log("Enter the name of the book");
+            const { bookname } = await prompt.get(['bookname'])
+            const books = await queryHandler.SearchByBookName(bookname)
+            console.log(books);
         }
 
         if (input == "logout") {
@@ -81,6 +168,7 @@ const userConsole = async () => {
                 console.log("logout success, bye " + username);
             }
         }
+
         if (input == "login") {
             const { userName } = await prompt.get(['userName'])
             const loginResult = await queryHandler.loginUser(userName)
@@ -92,6 +180,14 @@ const userConsole = async () => {
                 currentUser.setIsAdmin(isadmin);
                 currentUser.printUserInfo();
                 currentUser.printHelp();
+            }
+        }
+
+        if (input == 'report') {
+            if (!currentUser.isAdmin) {
+                console.log("Only Admin user can view report, sorry");
+            } else {
+                showReport()
             }
         }
 
@@ -142,8 +238,9 @@ const userConsole = async () => {
         }
     }
 }
-//quickTest()
-//userConsole()
+userConsole()
 //addNewBookTest()
 //testSearchBooName()
-placeOrderTestCase()
+//placeOrderTestCase()
+//testgetBestSalePublisher()
+//getOrderTest()
