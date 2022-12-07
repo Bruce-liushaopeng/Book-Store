@@ -1,7 +1,6 @@
 //import postgreSql module from npm
 const pgtools = require("pgtools"); //library for drop or create database
-const pw = "Lsp75908635" // change to your own Password
-let dbName = "bookstore5"
+const {pw, databaseName} = require("./database-initialize-variables") // change to your own Password
 const config = {
   user: "postgres",
   password: pw, //type your own database passoword here
@@ -9,7 +8,7 @@ const config = {
   host: "localhost",
 };
 
-pgtools.createdb(config, dbName, function (err, res) {
+pgtools.createdb(config, databaseName, function (err, res) {
   if (err) {
     console.log(err);
   }
@@ -21,4 +20,3 @@ pgtools.createdb(config, dbName, function (err, res) {
   }
 });
 
-module.exports = { dbName, pw }
