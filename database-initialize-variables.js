@@ -1,6 +1,6 @@
 //define the drop table query
 
-exports.databaseName = "bookstore5"
+exports.databaseName = "bookstore13"
 exports.pw = "Lsp75908635"
 
 exports.dropTable = `
@@ -15,7 +15,7 @@ DROP TABLE IF EXISTS BookGenre CASCADE;
 DROP TABLE IF EXISTS Book CASCADE;
 `;
 //defind create the table query
-exports.createTable = `-- create table SystemUser
+exports.createTable = `
 create table if not exists SystemUser
 	(UserName		CHARACTER VARYING(15) NOT NULL UNIQUE,
 	 Address		CHARACTER VARYING(50),
@@ -99,11 +99,110 @@ create table if not exists PublisherPhone
 		foreign key (PublisherName) references Publisher(PublisherName)	
 	);
 
--- create view to get the selling of last month per book.
-create or replace view lastMonthSell AS
-	with lastMonthDate (lastMonthDate) AS (
-		select current_date - 30
-	)
+    -- BONUS, cauculate the revenue by author
+    create or replace view authorSales As
+        with bs as
+            (select book.isbn, BookAuthor.author, book.sellsamount as sells 
+            from BookAuthor 
+            left join book 
+            on book.isbn=BookAuthor.isbn)
+        select 	author, sum(sells)as sales
+        from bs
+        group by author;
+    
+    
+    create or replace view SaleExpend As
+        with 
+        bookSale (isbn, revenue) as (
+            select book.isbn, book.sellsamount * book.SellingPrice from book), 
+        bookExp (isbn, purchaseTotal) as (
+            select book.isbn, (book.sellsamount + book.quantityInStock * book.PurchasePrice) from book),
+        publisherExp (isbn, publishershare) as (
+            select bookSale.isbn, bookSale.revenue * percentage as publisherExpend from bookSale natural join bookpublisher)
+    
+    select 
+    t1.isbn, revenue, purchaseTotal, publishershare, revenue - purchaseTotal - publishershare as profit 
+    from (bookSale natural join bookExp) as t1 left join publisherExp on t1.isbn = publisherExp.isbn;
+    
+    -- information for best author by sales unit count
+    create or replace view bestauthor_amount As
+        with bsa as
+            (select book.isbn, BookAuthor.author, sellsamount 
+            from BookAuthor 
+            left join book 
+            on book.isbn=BookAuthor.isbn)
+        select 	author, sum(sellsamount) as salesa
+        from bsa
+        group by author;
+        
+    
+    -- information for best author based on total revenue per author
+    create or replace view bestauthor_sales As
+        with bs as
+            (select book.isbn, BookAuthor.author, (book.sellsamount*book.sellingprice) as sells 
+            from BookAuthor 
+            left join book 
+            on book.isbn=BookAuthor.isbn)
+        select 	author, sum(sells)as sales
+        from bs
+        group by author;
+        
+    
+    
+    -- BONUS, cauculate the revenue by genre
+    create or replace view genreSales As
+        with bs as
+            (select book.isbn, bookgenre.genre, book.SellsAmount as sells 
+            from bookgenre 
+            left join book 
+            on book.isbn=bookgenre.isbn)
+        select 	genre, sum(sells)as sales
+        from bs
+        group by genre;
+    
+    -- BONUS, use to see which publisher creates the most profit for the books store
+    create or replace view PublisherTotalSale AS
+        with PublisherTotalSells as (
+            with PublisherSells as(
+                select publishername, bookname, ((sellingprice-purchaseprice - sellingprice * BookPublisher.percentage)*sellsamount) as sells
+                from BookPublisher join book
+                on bookpublisher.ISBN = book.isbn)
+    
+                select publishername, sum(sells) as total
+                from PublisherSells
+                group by publishername)
+    
+            select *
+            from PublisherTotalSells;
+    
+    -- BONUS get the publisher sells the most book
+    create or replace view bestPublisher_amount AS
+        with PublisherTotalAmount as (
+            with PublisherAmount as(
+                select publishername, bookname, sellsamount
+                from BookPublisher join book
+                on bookpublisher.ISBN = book.isbn)
+    
+                select publishername, sum(sellsamount) as total
+                from PublisherAmount
+                group by publishername)
+    
+            select *
+            from PublisherTotalAmount;
+    
+    select *
+    from bestpublisher_amount
+    where total = (select max(total) from bestpublisher_amount);
+    
+    -- create view to get the selling of last month per book.
+    create or replace view lastMonthSell AS
+        with lastMonthDate (lastMonthDate) AS (
+            select current_date - 30
+        )
+    
+        select ISBN, sum(Quantity) as sellAmount from (OrderBook o Join SystemOrder s on o.orderNumber = s.orderNumber)as combinedtable
+            where combinedtable.date <= current_date AND combinedtable.date > (select lastMonthDate from lastMonthDate)
+            GROUP by ISBN;
     
 `;
 
@@ -263,52 +362,69 @@ values
     ('admin1', 'ottawa Downtown', True);
 `;
 
-exports.initialFunctionQuery = `create or replace function insertNewBook	
-(ISBN numeric(13), BookName varchar(50), NumberofPages INT, PurchasePrice float(2), SellingPrice float(2), InitialStock INT, author CHARACTER VARYING(25), genre CHARACTER VARYING(25), PublisherName CHARACTER VARYING(25), percentage numeric(2)) 	
-RETURNS void AS $$	
-BEGIN	
-	--insert into Book table	
-	insert into Book	
-		values	
-		(ISBN, BookName, NumberOfPages, PurchasePrice, SellingPrice, 0, InitialStock);	
-	--insert into Book Author Table	
-	insert into BookAuthor	
-		values	
-		(ISBN, author);	
-	--insert into Book Publisher Table	
-	insert into BookPublisher	
-		values	
-		(ISBN, PublisherName, percentage);	
-	-- insert into BookGenre Table	
-	insert into BookGenre	
-		values	
-		(ISBN, genre);	
-END;	
-$$ LANGUAGE plpgsql;	
+exports.initialFunctionQuery = `create or replace function insertNewBook
+(ISBN numeric(13), BookName varchar(50), NumberofPages INT, PurchasePrice float(2), SellingPrice float(2), InitialStock INT, author CHARACTER VARYING(25), genre CHARACTER VARYING(25), PublisherName CHARACTER VARYING(25), percentage numeric(2)) 
+RETURNS void AS $$
+BEGIN
+    --insert into Book table
+    insert into Book
+        values
+        (ISBN, BookName, NumberOfPages, PurchasePrice, SellingPrice, 0, InitialStock);
 
+    --insert into Book Author Table
+    insert into BookAuthor
+        values
+        (ISBN, author);
 
-create or replace function placeOrder
-    (ISBN numeric(13), orderAmount int, orderNumber numeric(10), shippingAddress CHARACTER VARYING(25), userName CHARACTER VARYING(15)) 
-    RETURNS void AS $$
-    DECLARE
-        currDate Date := current_date;
-    BEGIN
-        --insert into SystemOrder table
-		insert into SystemOrder
-			values
-			(placeOrder.orderNumber, currDate, placeOrder.shippingAddress, placeOrder.userName);
-		--insert into OrderBook table
-        insert into orderbook
-            values
-            (placeOrder.orderNumber, placeOrder.ISBN, orderAmount);
-		 
-		-- update QuantityInStock and selling amount for book
-		update Book
-			set quantityInStock = quantityInStock - orderAmount,
-                SellsAmount = SellsAmount + orderAmount
-			where Book.ISBN = placeOrder.ISBN;
-    END;
-$$ LANGUAGE plpgsql;`;
+    --insert into Book Publisher Table
+    insert into BookPublisher
+        values
+        (ISBN, PublisherName, percentage);
+
+    -- insert into BookGenre Table
+    insert into BookGenre
+        values
+        (ISBN, genre);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE SEQUENCE if not exists sequenceNumber
+START WITH 1000
+INCREMENT BY 1;
+
+-- function for place an order on a single book
+create or replace function addSystemOrder
+( shippingAddress CHARACTER VARYING(25), userName CHARACTER VARYING(15)) 
+RETURNS void AS $$
+DECLARE
+    currDate Date := current_date;
+BEGIN
+    --insert into SystemOrder table
+    insert into SystemOrder
+        values
+        (nextval('sequenceNumber'), currDate, addSystemOrder.shippingAddress, addSystemOrder.userName) ;
+END;
+$$ LANGUAGE plpgsql;
+
+create or replace function updateOrderBook
+(ISBN numeric(13), orderAmount INT)
+RETURNS void AS $$
+Declare 
+orderNumber INT;
+BEGIN
+    select max(systemorder.orderNumber) into orderNumber from systemorder;
+    insert into orderbook
+        values
+        (orderNumber, updateOrderBook.ISBN, orderAmount);
+     
+    -- update QuantityInStock and selling amount for book
+    update Book
+        set quantityInStock = quantityInStock - orderAmount,
+            SellsAmount = SellsAmount + orderAmount
+        where Book.ISBN = updateOrderBook.ISBN;
+END;
+$$ LANGUAGE plpgsql;
+`;
 
 exports.initialTriggerQuery = `CREATE or replace FUNCTION book_stock_check() RETURNS trigger AS $book_stock_check$
 BEGIN
@@ -324,26 +440,6 @@ $book_stock_check$ LANGUAGE plpgsql;
 
 CREATE or replace TRIGGER book_stock_check AFTER UPDATE ON Book	
 FOR EACH ROW EXECUTE FUNCTION book_stock_check();`	
-
-exports.createGenreSales = `create view genreSales As
-with bs as
-    (select book.isbn, bookgenre.genre, (book.sellsamount*book.sellingprice) as sells 
-    from bookgenre 
-    left join book 
-    on book.isbn=bookgenre.isbn)
-select 	genre, sum(sells)as sales
-from bs
-group by genre;`
-
-exports.createAuthorSales = `create view authorSales As
-    with bs as
-        (select book.isbn, BookAuthor.author, (book.sellsamount*book.sellingprice) as Sales(dollar) 
-        from BookAuthor 
-        left join book 
-        on book.isbn=BookAuthor.isbn)
-    select 	author, sum(sells)as sales
-    from bs
-group by author`
 
 
 exports.getAllBooks = `select * from book`	

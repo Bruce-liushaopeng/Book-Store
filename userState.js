@@ -41,6 +41,7 @@ class User {
         console.log("<search-by-author> search books by author");
         console.log("<search-by-genre> search books by genre");
         console.log("<search-by-publisher> search books by publisher");
+        console.log("<search-by-name> search books by book name");
     }
 
     userHelp = () => {

@@ -1,11 +1,12 @@
 const {Client} = require('pg')
+const {pw, databaseName} = require('./database-initialize-variables')
 
 const client = new Client({
     user: "postgres",
-    password: "Lsp75908635", //type your own database passoword here
+    password: pw, //type your own database passoword here
     port: 5432,
     host: "localhost",
-    database: 'bookstore5'
+    database: databaseName
   });
 
 client.connect()
