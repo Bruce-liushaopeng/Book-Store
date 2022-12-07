@@ -44,16 +44,24 @@ const testReport = async () => {
     const {publishername: bestPublisher, total: bestPublisher_revenue}  = bestPublisherResult[0]
     console.log(bestPublisher + " generated the most revenue, revenue amount is $" + bestPublisher_revenue);
 
-    const saleExp = await queryHandler.getSaleExpendReport()
-    saleExp.forEach((se, i) => {
-        console.log("Book " + i);
-        console.log("isbn: " + se.isbn);
-        console.log("Sales Revenue: " + se.revenue);
-        console.log("Purchase Total Cost: " + se.purchasetotal);
-        console.log("Publisher Shared Cut: " + se.publishershare);
-        console.log("Profit generated: " + se.profit);
-        console.log(" ");
-    });
+    // const saleExp = await queryHandler.getSaleExpendReport()
+    // saleExp.forEach((se, i) => {
+    //     console.log("Book " + i);
+    //     console.log("isbn: " + se.isbn);
+    //     console.log("Sales Revenue: " + se.revenue);
+    //     console.log("Purchase Total Cost: " + se.purchasetotal);
+    //     console.log("Publisher Shared Cut: " + se.publishershare);
+    //     console.log("Profit generated: " + se.profit);
+    //     console.log(" ");
+    // });
+
+    const bestAuthorByRevenueResult = await queryHandler.getBestAuthorByRevenue()
+    const {author: bestAuthorRevenue, sales: revenueDetail} = bestAuthorByRevenueResult[0]
+    console.log(`Best Author by Revenue is  ${bestAuthorRevenue} , total revenue generated $ ${revenueDetail}`); 
+
+    const bestAuthorBySaleUnitResult = await queryHandler.getBestAuthorBySaleUnit()
+    const {author: bestAuthorUnitSales, salesa: unitSalesDetail} = bestAuthorBySaleUnitResult[0]
+    console.log(`Best Author by units sold is ${bestAuthorUnitSales} , total unit sold is  ${unitSalesDetail}`); 
 }
 
 const userConsole = async () => {
@@ -64,10 +72,21 @@ const userConsole = async () => {
         console.log("enter your command")
         const { input } = await prompt.get(['input'])
         console.log(input);
-        if (input == 'view-all-books') {
-            const res = await queryHandler.getAllBooks()
-            console.log(res);
-        }
+        if (input == "view-all-books") {
+            const res = await queryHandler.getAllBooks();
+            if (currentUser.getIsAdmin()) console.log(res);
+            else {
+              let bookArray = [];
+              for (let i = 0; i < res.length; i++) {
+                let temp = {};
+                temp["isbn"] = res[i]["isbn"];
+                temp["bookname"] = res[i]["bookname"];
+                temp["numberofpages"] = res[i]["numberofpages"];
+                bookArray.push(temp);
+              }
+              console.log(bookArray);
+            }
+          }
         if (input == "add-new-book") {
             if(!currentUser.getUserName()) {
                 console.log("Please login as ADMIN");
@@ -83,10 +102,22 @@ const userConsole = async () => {
         if (input == "select") {
             //console.log("please input the ISBN of the book");
             //const { isbn } = await prompt.get(['isbn'])
-            const { isbn } = await prompt.get(['isbn'])
-            const bookdetail = await queryHandler.getBookDetail(isbn)
-            console.log(bookdetail);
-        }
+            const { isbn } = await prompt.get(["isbn"]);
+            const bookdetail = await queryHandler.getBookDetail(isbn);
+            if (!currentUser.getIsAdmin()) {
+              let bookinfo = {
+                bookname: bookdetail[0]["bookname"],
+                numberofpages: bookdetail[0]["numberofpages"],
+                quantityinstock: bookdetail[0]["quantityinstock"],
+                author: bookdetail[1]["author"],
+                genre: [],
+              };
+              for (let i = 3; i < bookdetail.length; i++) {
+                bookinfo["genre"].push(bookdetail[i]["genre"]);
+              }
+              console.log(bookinfo);
+            } else console.log(bookdetail);
+          }
 
         if (input == 'search-by-isbn') {
             console.log("Enter the ISBN of the book");

@@ -281,6 +281,32 @@ let getOrder = async (ordernumber, username) => {
   }
 }
 
+let getBestAuthorBySaleUnit = async () => {
+  try {
+    const query = `select * 
+      from bestauthor_amount
+      where salesa = (select max(salesa) from bestauthor_amount);`;
+    const res = await client.query(query);
+    return res.rows;
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+}
+
+let getBestAuthorByRevenue = async () => {
+  try {
+    const query = `select * 
+      from bestauthor_sales
+      where sales = (select max(sales) from bestauthor_sales)`;
+    const res = await client.query(query);
+    return res.rows;
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+}
+
 let searchByGenre = async (genre) => {
   try {
     const query = `select isbn, bookname, genre from book natural join bookgenre where genre = '${genre}'`;
@@ -336,4 +362,4 @@ let getPublisherSale = async () => {
     }
 };
 
-module.exports = { searchByGenre, searchByAuthor, getPublisherSale, searchByPublisher,getBestSalePublisher, SearchByBookName, addBookPublisher, searchByISBN, getOrder, handleBasketOrder, addSystemOrder, updateOrderBook, getSaleExpendReport, getAllBooks, loginUser, registerUser, getBookDetail, getSingleBook, getBookPublisher, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}
+module.exports = { searchByGenre, searchByAuthor, getPublisherSale, searchByPublisher,getBestSalePublisher, getBestAuthorBySaleUnit, getBestAuthorByRevenue,SearchByBookName, addBookPublisher, searchByISBN, getOrder, handleBasketOrder, addSystemOrder, updateOrderBook, getSaleExpendReport, getAllBooks, loginUser, registerUser, getBookDetail, getSingleBook, getBookPublisher, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}

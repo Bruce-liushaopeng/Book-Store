@@ -30,7 +30,7 @@ create table if not exists Book
 	 QuantityInStock	INT NOT NULL,
 	 primary key (ISBN)
 	);
-	
+
 create table if not exists OrderBook
 	( OrderNumber		INT NOT NULL,
 	 ISBN				numeric(13) NOT NULL,
@@ -110,6 +110,31 @@ create or replace view SaleExpend As
 select 
 t1.isbn, revenue, purchaseTotal, publishershare, revenue - purchaseTotal - publishershare as profit 
 from (bookSale natural join bookExp) as t1 left join publisherExp on t1.isbn = publisherExp.isbn;
+
+-- information for best author by sales unit count
+create or replace view bestauthor_amount As
+	with bsa as
+		(select book.isbn, BookAuthor.author, sellsamount 
+		from BookAuthor 
+		left join book 
+		on book.isbn=BookAuthor.isbn)
+	select 	author, sum(sellsamount) as salesa
+	from bsa
+	group by author;
+	
+
+-- information for best author based on total revenue per author
+create or replace view bestauthor_sales As
+	with bs as
+		(select book.isbn, BookAuthor.author, (book.sellsamount*book.sellingprice) as sells 
+		from BookAuthor 
+		left join book 
+		on book.isbn=BookAuthor.isbn)
+	select 	author, sum(sells)as sales
+	from bs
+	group by author;
+	
+
 
 -- BONUS, cauculate the revenue by genre
 create or replace view genreSales As
