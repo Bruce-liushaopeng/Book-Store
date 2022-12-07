@@ -39,29 +39,34 @@ const placeOrderTestCase = () => {
     const result = queryHandler.handleBasketOrder(items)
 }
 
-const testReport = async () => {
+const showReport = async () => {
+    const saleExp = await queryHandler.getSaleExpendReport()
+    console.log("SALE VS EXPEND REPORT");
+    saleExp.forEach((se, i) => {
+        console.log("Book " + i);
+        console.log("isbn: " + se.isbn);
+        console.log("Sales Revenue: " + se.revenue);
+        console.log("Purchase Total Cost: " + se.purchasetotal);
+        console.log("Publisher Shared Cut: " + se.publishershare);
+        console.log("Profit generated: " + se.profit);
+        console.log(" ");
+    });
+    console.log("**************");
     const bestPublisherResult = await queryHandler.getBestSalePublisher()
     const {publishername: bestPublisher, total: bestPublisher_revenue}  = bestPublisherResult[0]
+    console.log("Most Revenue Publisher:");
     console.log(bestPublisher + " generated the most revenue, revenue amount is $" + bestPublisher_revenue);
-
-    // const saleExp = await queryHandler.getSaleExpendReport()
-    // saleExp.forEach((se, i) => {
-    //     console.log("Book " + i);
-    //     console.log("isbn: " + se.isbn);
-    //     console.log("Sales Revenue: " + se.revenue);
-    //     console.log("Purchase Total Cost: " + se.purchasetotal);
-    //     console.log("Publisher Shared Cut: " + se.publishershare);
-    //     console.log("Profit generated: " + se.profit);
-    //     console.log(" ");
-    // });
-
+    console.log("**************");
     const bestAuthorByRevenueResult = await queryHandler.getBestAuthorByRevenue()
     const {author: bestAuthorRevenue, sales: revenueDetail} = bestAuthorByRevenueResult[0]
+    console.log("Best Revenue Author: ");
     console.log(`Best Author by Revenue is  ${bestAuthorRevenue} , total revenue generated $ ${revenueDetail}`); 
-
+    console.log("**************");
     const bestAuthorBySaleUnitResult = await queryHandler.getBestAuthorBySaleUnit()
     const {author: bestAuthorUnitSales, salesa: unitSalesDetail} = bestAuthorBySaleUnitResult[0]
+    console.log("Best Sale Unit Author: ");
     console.log(`Best Author by units sold is ${bestAuthorUnitSales} , total unit sold is  ${unitSalesDetail}`); 
+    console.log("**************");
 }
 
 const userConsole = async () => {
@@ -157,7 +162,13 @@ const userConsole = async () => {
             }
         }
 
-        if (input == '')
+        if (input == 'report') {
+            if (!currentUser.isAdmin) {
+                console.log("Only Admin user can view report, sorry");
+            } else {
+                showReport()
+            }
+        }
 
         if (input == "place-order") {
             if (!currentUser.getUserName()) {
@@ -206,9 +217,8 @@ const userConsole = async () => {
         }
     }
 }
-//userConsole()
+userConsole()
 //addNewBookTest()
 //testSearchBooName()
 //placeOrderTestCase()
 //testgetBestSalePublisher()
-testReport()
