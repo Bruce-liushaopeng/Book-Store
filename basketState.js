@@ -25,7 +25,6 @@ class Basket {
         const itemObjs = this.basket.map(b => {
             return b.getItemObj()
         })
-        console.log(itemObjs);
         return itemObjs
     }
 }

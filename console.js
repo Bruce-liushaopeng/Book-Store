@@ -162,28 +162,35 @@ const userConsole = async () => {
             if (!currentUser.isAdmin) {
                 console.log("Only Admin user can view report, sorry");
             } else {
-                console.log("Which report you want to see ");
-                console.log("<book-report> to view book report");
-                console.log("<publisher-report> to view publisher report");
-                console.log("<genre-report> to view genre report");
-                console.log("<author-report> to view author report");
-                const { type } = await prompt.get(['type'])
-                if(type == "book-report") {
-                    const res = await await queryHandler.getBookReport();
-                    console.log(res);
-                } else if (type == "author-report") {
-                    const res = await queryHandler.getAuthorReport();
-                    console.log(res);
-                } else if (type == "genre-report") {
-                    const res = await queryHandler.getGenreReport();
-                    console.log(res);
-                } else if (type == "publisher-report") {
-                    const res = await queryHandler.getPublisherReport();
-                    console.log(res);
-                } 
-
+                var viewing_report = true;
+                while (viewing_report) {
+                    console.log("Which report you want to see ");
+                    console.log("<book-report> to view book report");
+                    console.log("<publisher-report> to view publisher report");
+                    console.log("<genre-report> to view genre report");
+                    console.log("<author-report> to view author report");
+                    console.log("<end> Finish viewing report, back to menu");
+                    const { type } = await prompt.get(['type'])
+                    if(type == "book-report") {
+                        const res = await await queryHandler.getBookReport();
+                        console.log(res);
+                    } else if (type == "author-report") {
+                        const res = await queryHandler.getAuthorReport();
+                        console.log(res);
+                    } else if (type == "genre-report") {
+                        const res = await queryHandler.getGenreReport();
+                        console.log(res);
+                    } else if (type == "publisher-report") {
+                        const res = await queryHandler.getPublisherReport();
+                        console.log(res);
+                    } 
+                    else if (type == "end") {
+                        console.log("thanks for using report function.");
+                        viewing_report = false;
+                }
             }
         }
+    }
 
         if (input == "place-order") {
             if (!currentUser.getUserName()) {

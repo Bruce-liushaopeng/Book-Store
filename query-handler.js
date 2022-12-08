@@ -243,7 +243,6 @@ let getOrderNumber = async () => {
 
 let handleBasketOrder = async (basketItems) => {
   try {
-    console.log(basketItems);
     const {shippingAddress, userName} = basketItems[0]
     await addSystemOrder(shippingAddress, userName)
     basketItems.forEach(item => {

@@ -41,7 +41,7 @@ class User {
         console.log("<search-by-author> search books by author");
         console.log("<search-by-genre> search books by genre");
         console.log("<search-by-publisher> search books by publisher");
-        console.log("<search-by-name> search books by book name");
+        console.log("<search-by-bookname> search books by book name");
     }
 
     userHelp = () => {
@@ -55,7 +55,6 @@ class User {
     adminHelp = () => {
         this.userHelp()
         console.log("<add-new-book> add new book to the store");
-        console.log("<logout> logout your account");
         console.log("<view-report> to view all the available reports");
     }
 
