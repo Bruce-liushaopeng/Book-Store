@@ -59,6 +59,7 @@ Because the short timeframe of the project, There are some edge cases are not ha
         1. Do not place-order with an empty basket, use add-to-basket command first.
         2. When system requiring user input, please don't provide an empty string.
         3. Search function in this application is case sensitive
+        4. The system don't support new Admin register, to test Admin functionality, use the username "admin1"
 
     
     

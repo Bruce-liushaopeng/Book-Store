@@ -113,7 +113,7 @@ let getSingleBook = async (isbn) => {
 
 let SearchByBookName = async (bookName) => {
   try{
-      const query = `select BookName 
+      const query = `select isbn, bookname, numberofpages, sellingprice  
         from Book
         where BookName LIKE '%${bookName}%';`
       const res = await client.query(query)
@@ -137,7 +137,7 @@ let getBookAuthor = async (isbn) => {
 
 let getBookPublisher = async (isbn) => {
   try{
-      const query = `select * from BookPublisher where isbn = ${isbn};`
+      const query = `select publishername from BookPublisher where isbn = ${isbn};`
       const res = await client.query(query)
       return (res.rows);
   } catch (err) {

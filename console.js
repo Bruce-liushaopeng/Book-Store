@@ -13,10 +13,10 @@ const initialize = async () => {
     // await queryHandler.initializeData();
     // await queryHandler.initializeFunction();
     // await queryHandler.initializeTrigger();
-    // queryHandler.addNewBook( 9780747532748, 'Harry Potter and the Philosophers Stone5', 400, 15, 20, 15, 'J.K. Rowling', 'Advanture',  'Bloomsbury Publishing')
+    // queryHandler.addNewBook( 9780747532748, 'Harry Potter and the Philosophers Stone5', 400, 15, 20, 15, 'J.K. Rowling', 'Adventure',  'Bloomsbury Publishing')
 }
 const addNewBookTest = async () => {
-    await queryHandler.addNewBook( 9780747532333, 'Harry Potter and the Philosophers Stone5', 400, 15, 20, 15, 'J.K. Rowling', 'Advanture',  'Bloomsbury Publishing', 0.02)
+    await queryHandler.addNewBook( 9780747532333, 'Harry Potter and the Philosophers Stone5', 400, 15, 20, 15, 'J.K. Rowling', 'Adventure',  'Bloomsbury Publishing', 0.02)
 }
 
 const testSearchBooName = async () => {
@@ -108,9 +108,11 @@ const userConsole = async () => {
             if (!currentUser.getIsAdmin()) {
               let bookinfo = {
                 bookname: bookdetail[0]["bookname"],
+                bookIsbn: bookdetail[0]["isbn"],
                 numberofpages: bookdetail[0]["numberofpages"],
                 quantityinstock: bookdetail[0]["quantityinstock"],
                 author: bookdetail[1]["author"],
+                publisher: bookdetail[2]["publishername"],
                 genre: [],
               };
               for (let i = 3; i < bookdetail.length; i++) {
