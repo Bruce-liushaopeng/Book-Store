@@ -48,6 +48,7 @@ class User {
         this.guestHelp()
         console.log("<logout> logout your account");
         console.log("<place-order> place order");
+        console.log("<check-order> check your order");
         console.log("<user-info> view your information");
     }
 

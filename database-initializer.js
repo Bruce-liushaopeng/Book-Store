@@ -60,5 +60,5 @@ let initialize = async() => {
   }})
 }
 
-//initialize()
+initialize()
 placeInitialOrder()
