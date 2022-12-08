@@ -259,46 +259,9 @@ let handleBasketOrder = async (basketItems) => {
   }
 };
 
-let getBestSalePublisher = async () => {
-  try {
-    const query = initialSetup.getBestSalePublisher;
-    const res = await client.query(query);
-    return res.rows;
-  } catch (err) {
-    console.log(err.message);
-    return err.message;
-  }
-}
-
 let getOrder = async (ordernumber, username) => {
   try {
     const query = `select * from systemorder natural join orderbook where ordernumber = ${ordernumber} and username = '${username}'`;
-    const res = await client.query(query);
-    return res.rows;
-  } catch (err) {
-    console.log(err.message);
-    return err.message;
-  }
-}
-
-let getBestAuthorBySaleUnit = async () => {
-  try {
-    const query = `select * 
-      from bestauthor_amount
-      where salesa = (select max(salesa) from bestauthor_amount);`;
-    const res = await client.query(query);
-    return res.rows;
-  } catch (err) {
-    console.log(err.message);
-    return err.message;
-  }
-}
-
-let getBestAuthorByRevenue = async () => {
-  try {
-    const query = `select * 
-      from bestauthor_sales
-      where sales = (select max(sales) from bestauthor_sales)`;
     const res = await client.query(query);
     return res.rows;
   } catch (err) {
@@ -351,15 +314,49 @@ let getSaleExpendReport = async () => {
   }
 }
 
-let getPublisherSale = async () => {
+let getAuthorReport = async () => {
+  try {
+    const query = `select * from author_report`;
+    const res = await client.query(query);
+    return res.rows;
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+}
+
+let getGenreReport = async () => {
+  try {
+    const query = `select * from genre_report`;
+    const res = await client.query(query);
+    return res.rows;
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+}
+
+let getPublisherReport = async () => {
+  try {
+    const query = `select * from publisher_report`;
+    const res = await client.query(query);
+    return res.rows;
+  } catch (err) {
+    console.log(err.message);
+    return err.message;
+  }
+}
+
+  let getBookReport = async () => {
     try {
-      const query = initialSetup.getSaleExpendReport;
+      const query = `select * from book_report`;
       const res = await client.query(query);
-      return res.rows[0];
+      return res.rows;
     } catch (err) {
       console.log(err.message);
       return err.message;
     }
-};
+  }
 
-module.exports = { searchByGenre, searchByAuthor, getPublisherSale, searchByPublisher,getBestSalePublisher, getBestAuthorBySaleUnit, getBestAuthorByRevenue,SearchByBookName, addBookPublisher, searchByISBN, getOrder, handleBasketOrder, addSystemOrder, updateOrderBook, getSaleExpendReport, getAllBooks, loginUser, registerUser, getBookDetail, getSingleBook, getBookPublisher, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}
+
+module.exports = { getBookReport, getAuthorReport, getPublisherReport, getGenreReport, searchByGenre, searchByAuthor, searchByPublisher,SearchByBookName, addBookPublisher, searchByISBN, getOrder, handleBasketOrder, addSystemOrder, updateOrderBook, getSaleExpendReport, getAllBooks, loginUser, registerUser, getBookDetail, getSingleBook, getBookPublisher, initializeTrigger, initializeFunction, initializeTable, initializeData, addNewBook}

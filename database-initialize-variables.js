@@ -1,6 +1,6 @@
 //define the drop table query
 
-exports.databaseName = "bookstore13"
+exports.databaseName = "databaseTest"
 exports.pw = "Lsp75908635"
 
 exports.dropTable = `
@@ -341,12 +341,12 @@ values
     (9780747538486, 'Bloomsbury Publishing', 0.05),
     (9780747542155, 'Bloomsbury Publishing', 0.05),
     (9780747546245, 'Bloomsbury Publishing', 0.05),
-    (9780618042203,'Houghton Mifflin Harcourt',0.09),
-    (9780618042210,'Houghton Mifflin Harcourt',0.09),
-    (9780618083589, 'Houghton Mifflin Harcourt',0.09),
-    (9780618042234, 'Houghton Mifflin Harcourt',0.09),
-    (9780261102231, 'Houghton Mifflin Harcourt',0.09),
-    (9780618083565, 'Houghton Mifflin Harcourt',0.09),
+    (9780618042203,'Houghton Mifflin Harcourt',0.02),
+    (9780618042210,'Houghton Mifflin Harcourt',0.02),
+    (9780618083589, 'Houghton Mifflin Harcourt',0.02),
+    (9780618042234, 'Houghton Mifflin Harcourt',0.02),
+    (9780261102231, 'Houghton Mifflin Harcourt',0.02),
+    (9780618083565, 'Houghton Mifflin Harcourt',0.02),
     (9780553588484, 'Bantam Spectra', 0.07),
     (9780553381696, 'Bantam Spectra', 0.07),
     (9780553573428, 'Bantam Spectra', 0.07),
@@ -442,11 +442,10 @@ CREATE or replace TRIGGER book_stock_check AFTER UPDATE ON Book
 FOR EACH ROW EXECUTE FUNCTION book_stock_check();`	
 
 
-exports.getAllBooks = `select * from book`	
-exports.getAllBooks = `select * from book`;
+exports.getAllBooks = `select * from book`
 
 // query for report generating
-exports.getSellExpendReport = `select * from SaleExpend`	
+exports.getSellExpendReport = `select * from saleExpend_report`	
 exports.getBestSalePublisher = `select * from PublisherTotalSale where total = (select max(total) from PublisherTotalSale)`;
 exports.getPubliserSale = `select * from PublisherTotalSale`
 exports.getAuthorSales = `select * from authorSales`

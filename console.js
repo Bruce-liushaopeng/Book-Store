@@ -44,34 +44,9 @@ const placeOrderTestCase = () => {
     const result = queryHandler.handleBasketOrder(items)
 }
 
-const showReport = async () => {
-    const saleExp = await queryHandler.getSaleExpendReport()
-    console.log("SALE VS EXPEND REPORT");
-    saleExp.forEach((se, i) => {
-        console.log("Book " + i);
-        console.log("isbn: " + se.isbn);
-        console.log("Sales Revenue: " + se.revenue);
-        console.log("Purchase Total Cost: " + se.purchasetotal);
-        console.log("Publisher Shared Cut: " + se.publishershare);
-        console.log("Profit generated: " + se.profit);
-        console.log(" ");
-    });
-    console.log("**************");
-    const bestPublisherResult = await queryHandler.getBestSalePublisher()
-    const {publishername: bestPublisher, total: bestPublisher_revenue}  = bestPublisherResult[0]
-    console.log("Most Revenue Publisher:");
-    console.log(bestPublisher + " generated the most revenue, revenue amount is $" + bestPublisher_revenue);
-    console.log("**************");
-    const bestAuthorByRevenueResult = await queryHandler.getBestAuthorByRevenue()
-    const {author: bestAuthorRevenue, sales: revenueDetail} = bestAuthorByRevenueResult[0]
-    console.log("Best Revenue Author: ");
-    console.log(`Best Author by Revenue is  ${bestAuthorRevenue} , total revenue generated $ ${revenueDetail}`); 
-    console.log("**************");
-    const bestAuthorBySaleUnitResult = await queryHandler.getBestAuthorBySaleUnit()
-    const {author: bestAuthorUnitSales, salesa: unitSalesDetail} = bestAuthorBySaleUnitResult[0]
-    console.log("Best Sale Unit Author: ");
-    console.log(`Best Author by units sold is ${bestAuthorUnitSales} , total unit sold is  ${unitSalesDetail}`); 
-    console.log("**************");
+const bookReportTest = async() => {
+    const res = await queryHandler.getGenreReport();
+    console.log(res);
 }
 
 const userConsole = async () => {
@@ -183,11 +158,30 @@ const userConsole = async () => {
             }
         }
 
-        if (input == 'report') {
+        if (input == 'view-report') {
             if (!currentUser.isAdmin) {
                 console.log("Only Admin user can view report, sorry");
             } else {
-                showReport()
+                console.log("Which report you want to see ");
+                console.log("<book-report> to view book report");
+                console.log("<publisher-report> to view publisher report");
+                console.log("<genre-report> to view genre report");
+                console.log("<author-report> to view author report");
+                const { type } = await prompt.get(['type'])
+                if(type == "book-report") {
+                    const res = await await queryHandler.getBookReport();
+                    console.log(res);
+                } else if (type == "author-report") {
+                    const res = await queryHandler.getAuthorReport();
+                    console.log(res);
+                } else if (type == "genre-report") {
+                    const res = await queryHandler.getGenreReport();
+                    console.log(res);
+                } else if (type == "publisher-report") {
+                    const res = await queryHandler.getPublisherReport();
+                    console.log(res);
+                } 
+
             }
         }
 
@@ -244,3 +238,4 @@ userConsole()
 //placeOrderTestCase()
 //testgetBestSalePublisher()
 //getOrderTest()
+//bookReportTest()

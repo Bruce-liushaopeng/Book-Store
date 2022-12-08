@@ -97,20 +97,6 @@ create or replace view authorSales As
 	from bs
 	group by author;
 
-
-create or replace view SaleExpend As
-	with 
-	bookSale (isbn, revenue) as (
-		select book.isbn, book.sellsamount * book.SellingPrice from book), 
-	bookExp (isbn, purchaseTotal) as (
-		select book.isbn, (book.sellsamount + book.quantityInStock * book.PurchasePrice) from book),
-	publisherExp (isbn, publishershare) as (
-		select bookSale.isbn, bookSale.revenue * percentage as publisherExpend from bookSale natural join bookpublisher)
-
-select 
-t1.isbn, revenue, purchaseTotal, publishershare, revenue - purchaseTotal - publishershare as profit 
-from (bookSale natural join bookExp) as t1 left join publisherExp on t1.isbn = publisherExp.isbn;
-
 -- information for best author by sales unit count
 create or replace view bestauthor_amount As
 	with bsa as
@@ -127,7 +113,7 @@ create or replace view bestauthor_amount As
 create or replace view bestauthor_sales As
 	with bs as
 		(select book.isbn, BookAuthor.author, (book.sellsamount*book.sellingprice) as sells 
-		from BookAuthor 
+		from BookAuthor  
 		left join book 
 		on book.isbn=BookAuthor.isbn)
 	select 	author, sum(sells)as sales
@@ -180,6 +166,39 @@ create or replace view bestPublisher_amount AS
 select *
 from bestpublisher_amount
 where total = (select max(total) from bestpublisher_amount);
+
+-- create book report
+create or replace view book_report As
+	select isbn, bookname, sellsamount, quantityinstock, (purchaseprice * (sellsamount + quantityinstock)) as purchaseCost, (sellingprice * sellsamount) as revenue
+	,  (sellingprice * sellsamount * percentage) as publisherShared
+	,  (sellingprice * sellsamount) - (purchaseprice * (sellsamount + quantityinstock)) -(sellingprice * sellsamount * percentage) as profit
+	from book natural join bookpublisher;
+
+-- create publisher report
+create or replace view publisher_report as 
+	select publishername, sum(sellsamount) as book_unit_sold, sum(revenue) as revenue_created, sum(profit) as profit_created
+		from bookpublisher join book_report 
+		on book_report.isbn = bookpublisher.isbn
+		group by publishername;
+
+-- create genre report
+create or replace view genre_report as 
+	select genre, sum(sellsamount) as book_unit_sold, sum(revenue) as revenue_created, sum(profit) as profit_created
+		from bookgenre join book_report 
+		on book_report.isbn = bookgenre.isbn
+		group by genre;
+
+-- create author report 
+create view author_report as 
+	select author, sum(sellsamount) as book_unit_sold, sum(revenue) as revenue_created, sum(profit) as profit_created
+		from bookauthor join book_report 
+		on book_report.isbn = bookauthor.isbn
+		group by author;
+
+-- An overall report of revenue, cost, and profit
+create or replace view saleExpend_report as 
+	select sum(revenue) as total_revenue, sum(purchasecost) as book_purchase_cost, sum(publishershared) as publisherShare, sum(profit) as total_profit from book_report;
+	
 
 -- create view to get the selling of last month per book.
 create or replace view lastMonthSell AS

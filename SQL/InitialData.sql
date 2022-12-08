@@ -4,7 +4,7 @@ values ('Bloomsbury Publishing', '50 Bedford Square, London', 'contact@bloomsbur
 ('Houghton Mifflin Harcourt', '83 Alexander StCrows Nest', 'UK@allenandunwin.com', '12345678909876544'), -- lord of the rings
 ('Bantam Spectra', '230 West Street, NewYork', 'support@sibme.com', '12345678909876513'); -- the Game of the Thrones
 
---Insert into PublisherPhone
+Insert into PublisherPhone
 values 
     ('Bloomsbury Publishing', 1234567890987), 
     ('Bloomsbury Publishing', 1234567890988), 
@@ -138,12 +138,12 @@ values
     (9780618042234, 'Houghton Mifflin Harcourt',0.09),
     (9780261102231, 'Houghton Mifflin Harcourt',0.09),
     (9780618083565, 'Houghton Mifflin Harcourt',0.09),
-    (9780553588484, 'Bantam Spectra', 1.12),
-    (9780553381696, 'Bantam Spectra', 1.12),
-    (9780553573428, 'Bantam Spectra', 1.12),
-    (9780553582024, 'Bantam Spectra', 1.12),
-    (9780553582017, 'Bantam Spectra', 1.12),
-    (9780002247412, 'Bantam Spectra', 1.12);
+    (9780553588484, 'Bantam Spectra', 0.02),
+    (9780553381696, 'Bantam Spectra', 0.02),
+    (9780553573428, 'Bantam Spectra', 0.02),
+    (9780553582024, 'Bantam Spectra', 0.02),
+    (9780553582017, 'Bantam Spectra', 0.02),
+    (9780002247412, 'Bantam Spectra', 0.02);
 
 -- insert initial users
 insert into SystemUser
