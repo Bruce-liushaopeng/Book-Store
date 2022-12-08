@@ -136,6 +136,20 @@ const userConsole = async () => {
             console.log(books);
         }
 
+        if (input == 'search-by-genre') {
+            console.log("Enter the name of the genre");
+            const { genre } = await prompt.get(['genre'])
+            const books = await queryHandler.searchByGenre(genre)
+            console.log(books);
+        }
+
+        if (input == 'search-by-publisher') {
+            console.log("Enter the name of the publisher");
+            const { publisher } = await prompt.get(['publisher'])
+            const books = await queryHandler.searchByPublisher(publisher)
+            console.log(books);
+        }
+
         if (input == "logout") {
             if(! currentUser.getUserName()){
                 console.log("You are not login yet, can not logout");

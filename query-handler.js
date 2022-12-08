@@ -271,8 +271,9 @@ let getOrder = async (ordernumber, username) => {
 
 let searchByGenre = async (genre) => {
   try {
-    const query = `select isbn, bookname, genre from book natural join bookgenre where genre = '${genre}'`;
+    const query = `select isbn, bookname, genre from book natural join bookgenre where genre LIKE '%${genre}%';`;
     const res = await client.query(query);
+    console.log(res);
     return res.rows;
   } catch (err) {
     console.log(err.message);
@@ -293,7 +294,7 @@ let searchByAuthor = async (author) => {
 
 let searchByPublisher = async (publisher) => {
   try {
-    const query = `select isbn, bookname, publisherName from book natural join bookPublisher where publisherName = '${publisher}'`;
+    const query = `select isbn, bookname, publisherName from book natural join bookPublisher where publisherName LIKE '%${publisher}%';`;
     const res = await client.query(query);
     return res.rows;
   } catch (err) {
