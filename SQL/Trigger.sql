@@ -1,7 +1,7 @@
 -- trigger function when update book stock amount
 CREATE or replace FUNCTION book_stock_check() RETURNS trigger AS $book_stock_check$
     BEGIN
-        -- checking book stock quatities, if less than 10, auto plus 15
+        -- checking book stock quatities, if less than 10, auto plus thge amount where amout equal to the total sale in the last month.
         IF NEW.quantityInStock < 10 THEN
             -- auto ordering and stock up
             update book set quantityInStock = NEW.quantityInStock + (select SellsAmount from lastMonthSell where lastMonthSell.ISBN = book.ISBN) 
