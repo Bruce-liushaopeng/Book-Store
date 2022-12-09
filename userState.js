@@ -36,6 +36,7 @@ class User {
         console.log("<view-all-books> view all the books in the store" );
         console.log("<select> select a book to view detail");
         console.log("<add-to-basket> to add the book to like to your basket");
+        console.log("<view-basket> to view the basket");
         console.log("<help> to view command line info again");
         console.log("<search-by-isbn> search a book by isbn");
         console.log("<search-by-author> search books by author");

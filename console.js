@@ -141,6 +141,12 @@ const userConsole = async () => {
             const { genre } = await prompt.get(['genre'])
             const books = await queryHandler.searchByGenre(genre)
             console.log(books);
+
+        } if (input == 'search-by-author') {
+            console.log("Enter the name of the author");
+            const { author } = await prompt.get(['author'])
+            const books = await queryHandler.searchByAuthor(author)
+            console.log(books);
         }
 
         if (input == 'search-by-publisher') {
@@ -255,10 +261,10 @@ const userConsole = async () => {
         }
     }
 }
-userConsole()
+//userConsole()
 //addNewBookTest()
 //testSearchBooName()
 //placeOrderTestCase()
 //testgetBestSalePublisher()
 //getOrderTest()
-//bookReportTest()
+totalPriceTest()

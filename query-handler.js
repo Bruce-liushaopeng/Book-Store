@@ -137,7 +137,7 @@ let getBookAuthor = async (isbn) => {
 
 let getBookPublisher = async (isbn) => {
   try{
-      const query = `select publishername from BookPublisher where isbn = ${isbn};`
+      const query = `select * from bookpublisher where isbn = ${isbn};`
       const res = await client.query(query)
       return (res.rows);
   } catch (err) {
